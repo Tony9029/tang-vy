@@ -1,32 +1,50 @@
-{
-  /* MÀN HÌNH 3.2: THỜI GIAN YÊU (ĐỒNG HỒ CHỜ ĐỢI) */
-}
-{
-  currentView === "timer" && (
-    <motion.div
-      key="timer"
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      className="w-full max-w-lg z-10"
-    >
-      <Card className="p-8 text-center flex flex-col items-center relative">
+"use client";
+
+import React from "react";
+import { Heart, ArrowLeft } from "lucide-react";
+
+export default function LoveTimer({ setView }: { setView?: any }) {
+  return (
+    <div className="min-h-screen bg-[#fff0f5] flex flex-col items-center justify-center p-6 animate-in fade-in zoom-in duration-500">
+      <div className="bg-white p-12 md:p-16 rounded-[4rem] shadow-2xl max-w-2xl w-full text-center relative border border-pink-100">
+        {/* Nút quay lại */}
         <button
-          onClick={() => setCurrentView("home")}
-          className="absolute top-4 left-4 p-2 bg-pink-50 rounded-full text-pink-500 hover:bg-pink-100 transition-all"
+          onClick={() => setView && setView("home")}
+          className="absolute top-10 left-10 text-pink-400 hover:text-pink-600 transition-colors"
         >
-          <ArrowLeft className="w-5 h-5" />
+          <ArrowLeft size={40} />
         </button>
 
-        <Heart className="w-12 h-12 text-pink-400 fill-pink-100 mb-4 mt-4" />
+        {/* Trái tim đập */}
+        <div className="relative w-48 h-48 mx-auto mb-12 mt-8 md:mt-0">
+          <div className="absolute inset-0 bg-pink-400 rounded-full animate-ping opacity-25"></div>
+          <div className="relative w-full h-full bg-gradient-to-tr from-pink-500 to-rose-400 rounded-full flex items-center justify-center shadow-2xl">
+            <Heart size={80} className="text-white fill-white animate-pulse" />
+          </div>
+        </div>
 
-        {/* SỬA DÒNG NÀY: */}
-        <h2 className="text-xl font-bold text-gray-800 mb-6">
-          Chờ ngày chung đôi
+        <h2 className="text-4xl font-black text-slate-700 mb-12">
+          Hành trình của chúng mình
         </h2>
 
-        <LoveTimer />
-      </Card>
-    </motion.div>
+        {/* Đồng hồ đếm */}
+        <div className="grid grid-cols-4 gap-6 mb-12">
+          {["NGÀY", "GIỜ", "PHÚT", "GIÂY"].map((unit) => (
+            <div key={unit}>
+              <div className="bg-[#fff0f5] rounded-3xl py-8 text-5xl font-black text-[#f43f5e]">
+                00
+              </div>
+              <div className="text-sm md:text-base font-bold text-slate-400 mt-4 tracking-widest">
+                {unit}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-[#f43f5e] text-xl font-bold italic animate-bounce">
+          "Đang chờ Vy cho phép chạy..."
+        </p>
+      </div>
+    </div>
   );
 }
