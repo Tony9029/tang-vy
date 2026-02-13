@@ -11,7 +11,7 @@ const quicksand = Quicksand({
 });
 
 export const metadata: Metadata = {
-  title: "Góc nhỏ của Bé 💖",
+  title: "Góc nhỏ của Vy 💖",
   description: "Một nơi lưu giữ kỷ niệm của chúng mình",
 };
 
