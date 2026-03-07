@@ -22,6 +22,12 @@ const Typewriter = ({ text }: { text: string }) => {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
+    // Reset khi text thay đổi (mở thư mới)
+    setDisplayedText("");
+    setIndex(0);
+  }, [text]);
+
+  useEffect(() => {
     if (index < text.length) {
       const timeout = setTimeout(() => {
         setDisplayedText((prev) => prev + text[index]);
@@ -224,15 +230,64 @@ const TIMELINE_DATA = [
   { year: "2028", status: "locked", events: [] },
 ];
 
+// --- DATA: THƯ VIỆN CẢM XÚC (NHỮNG NGÀY ĐẶC BIỆT) ---
+const LIBRARY_DATA = [
+  {
+    id: "8-3-2026",
+    date: "08/03/2026",
+    title: "Ngày Quốc Tế Phụ Nữ 8/3",
+    coverEmoji: "💐",
+    content: `Gửi Ngoan Xinh Yêu Mang Tên Vy
+
+Tui không giỏi nói những lời mật ngọt, cũng chẳng biết phô trương tình cảm theo cách người ta thường làm. Tui chọn yêu Vy theo cách riêng của mình – một cách yêu không ồn ào, không khéo léo, nhưng luôn chân thật.
+
+Tình yêu của tui nằm trong những câu hỏi nhỏ nhặt mỗi ngày: "Vy ăn j chưa?", "Nào Vy zìa nói tui biết nhó", hay "Hôm nay có mệt lắm không?". Hoặc là những khi tui cảm thấy nhớ Vy tui không dám gọi hay phiền Vy mà chỉ lặng lẽ đọc lại từng dòng tin nhắn cũ rồi thầm cười . Nếu Vy để ý một chút, Vy sẽ thấy tình yêu của tui luôn hiện diện, kiên trì và cố gắng từng chút một. Có thể tui ít khi nói ra thành lời nhưng mong Vy hiểu là : Sự hiện diện của Vy luôn nằm trong mọi kế hoạch tương lai mà tui tính tới, tại tui sợ Vy bị áp lực hay khó chịu nên tui giấu hoy nhó.
+
+Nhân ngày 8/3 hôm nay, tui chúc Vy thật vui vẻ và hạnh phúc. Mong Vy luôn được trân trọng, bớt đi những áp lực cuộc sống và hãy cười thật nhiều nhé. Hãy cứ yêu thương bản thân thật tốt và luôn xinh đẹp theo cách của riêng mình.
+
+Vy nhớ nha: Bất cứ khi nào Vy không ổn, mong Vy nhớ rằng luôn có một người sẵn sàng ưu tiên để đến VY nhanh nhất.
+
+ tái bút: tác giả đang rất muốn ôm Vy vào hôm nay nhưng mà dự kiến sẽ hơi chậm trễ mong Vy ghi nhớ và tính lãi thêm nhiều cái ôm khác `,
+    color: "from-pink-400 to-rose-300",
+  },
+  {
+    id: "14-2-2026",
+    date: "14/02/2026",
+    title: "Valentine Đầu Tiên ",
+    coverEmoji: "🍫",
+    content:
+      "Món quà này tui đã ấp ủ làm cho Vy từ lâu rồi. Mong là góc nhỏ này sẽ khiến Vy vui và bất ngờ. Cảm ơn Vy vì đã xuất hiện trong thế giới của tui...",
+    color: "from-rose-400 to-red-400",
+  },
+  {
+    id: "17-2-2026",
+    date: "17/02/2026",
+    title: " Sinh nhật của Vy ",
+    coverEmoji: "🎂",
+    content: `Lần đầu tiên tụi mình gặp nhau.
+Ấn tượng đầu tiên của tui là Vy nhỏ nhắn, đáng yêu y hệt như những gì tui từng hình dung. Không hiểu sao ở cạnh Vy, tui thấy bình yên và thoải mái lắm, thoải mái đến mức tui có thể tự nhiên kể cho Vy nghe những tâm sự mà tui vốn dĩ chẳng bao giờ muốn nói với ai.
+Tui hy vọng rằng, trên những chặng đường sắp tới, chúng ta sẽ luôn có cơ hội đồng hành cùng nhau. Chúc Vy của tui có một ngày sinh nhật thật vui vẻ, ấm áp và luôn cười thật tươi nhé`,
+    color: "from-rose-400 to-red-400",
+  },
+];
+
 export default function Home() {
   const [isLocked, setIsLocked] = useState(true);
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
-  const [view, setView] = useState<"home" | "timeline" | "timer" | "letters">(
+
+  // Đổi timer thành library ở đây
+  const [view, setView] = useState<"home" | "timeline" | "library" | "letters">(
     "home",
   );
+
   const [selectedLetter, setSelectedLetter] = useState<
     (typeof LETTERS_DATA)[0] | null
+  >(null);
+
+  // State mới cho Thư Viện Cảm Xúc
+  const [selectedLibraryItem, setSelectedLibraryItem] = useState<
+    (typeof LIBRARY_DATA)[0] | null
   >(null);
 
   const CORRECT_PASSWORD = "1702";
@@ -247,7 +302,7 @@ export default function Home() {
     }
   };
 
-  // 1. MÀN HÌNH KHÓA (LOCK SCREEN) - Đã làm TO RA
+  // 1. MÀN HÌNH KHÓA (LOCK SCREEN)
   if (isLocked) {
     return (
       <main className="min-h-screen bg-[#fff0f5] flex items-center justify-center p-6 md:p-12">
@@ -303,7 +358,7 @@ export default function Home() {
     );
   }
 
-  // 2. MÀN HÌNH CHÍNH (HOME) - Thiết kế dạng Card ở giữa
+  // 2. MÀN HÌNH CHÍNH (HOME)
   if (view === "home") {
     return (
       <main className="min-h-screen bg-[#fff0f5] flex items-center justify-center p-6 animate-in fade-in zoom-in duration-700">
@@ -321,10 +376,11 @@ export default function Home() {
               label="Dòng Thời Gian"
               onClick={() => setView("timeline")}
             />
+            {/* Đã sửa dòng này thành Thư Viện Cảm Xúc */}
             <MenuBtn
-              icon={<Clock size={32} />}
-              label="Thời Gian Yêu"
-              onClick={() => setView("timer")}
+              icon={<Sparkles size={32} />}
+              label="Thư Viện Cảm Xúc"
+              onClick={() => setView("library")}
             />
             <MenuBtn
               icon={<Mail size={32} />}
@@ -337,44 +393,94 @@ export default function Home() {
     );
   }
 
-  // 3. MÀN HÌNH TIMER
-  if (view === "timer") {
+  // 3. MÀN HÌNH THƯ VIỆN CẢM XÚC (LIBRARY - Thay cho Timer cũ)
+  if (view === "library") {
     return (
-      <main className="min-h-screen bg-[#fff0f5] flex flex-col items-center justify-center p-6">
-        <div className="bg-white p-12 md:p-16 rounded-[4rem] shadow-2xl max-w-2xl w-full text-center relative border border-pink-100">
-          <button
-            onClick={() => setView("home")}
-            className="absolute top-10 left-10 text-pink-400 hover:text-pink-600 transition-colors"
-          >
-            <ArrowLeft size={40} />
-          </button>
-          <div className="relative w-48 h-48 mx-auto mb-12 mt-8 md:mt-0">
-            <div className="absolute inset-0 bg-pink-400 rounded-full animate-ping opacity-25"></div>
-            <div className="relative w-full h-full bg-gradient-to-tr from-pink-500 to-rose-400 rounded-full flex items-center justify-center shadow-2xl">
-              <Heart
-                size={80}
-                className="text-white fill-white animate-pulse"
-              />
+      <main className="min-h-screen bg-[#fff0f5] p-6 md:p-12 flex flex-col items-center justify-center">
+        <div className="max-w-6xl w-full mx-auto">
+          {!selectedLibraryItem && (
+            <button
+              onClick={() => setView("home")}
+              className="mb-10 text-[#f43f5e] text-2xl font-black flex items-center gap-3 hover:scale-105 transition-transform"
+            >
+              <ArrowLeft size={32} /> Quay về
+            </button>
+          )}
+
+          {!selectedLibraryItem ? (
+            <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
+              <div className="text-center mb-16">
+                <h2 className="text-5xl md:text-6xl font-black text-[#f43f5e] mb-4 flex items-center justify-center gap-4">
+                  <Sparkles size={48} className="text-pink-400" /> Thư Viện Cảm
+                  Xúc
+                </h2>
+                <p className="text-2xl text-slate-500 italic">
+                  "Gửi em vào những ngày đặc biệt nhất..."
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {LIBRARY_DATA.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setSelectedLibraryItem(item)}
+                    className={`group relative overflow-hidden rounded-[3rem] shadow-lg hover:shadow-2xl transition-all text-left border-4 border-white aspect-[2/1] md:aspect-auto md:h-64 flex flex-col justify-between p-10 bg-gradient-to-br ${item.color}`}
+                  >
+                    <div className="absolute top-0 right-0 -mt-8 -mr-8 text-9xl opacity-20 group-hover:scale-110 transition-transform duration-500">
+                      {item.coverEmoji}
+                    </div>
+                    <div>
+                      <span className="inline-block px-4 py-2 bg-white/30 backdrop-blur-md rounded-full text-white font-black text-sm mb-4 shadow-sm">
+                        {item.date}
+                      </span>
+                      <h3 className="text-3xl font-black text-white leading-tight drop-shadow-md w-3/4">
+                        {item.title}
+                      </h3>
+                    </div>
+                    <div className="text-white/90 font-bold flex items-center gap-2 group-hover:translate-x-2 transition-transform">
+                      Mở bưu thiếp <ChevronRight size={20} />
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-          <h2 className="text-4xl font-black text-slate-700 mb-12">
-            Hành trình của chúng mình
-          </h2>
-          <div className="grid grid-cols-4 gap-6 mb-12">
-            {["NGÀY", "GIỜ", "PHÚT", "GIÂY"].map((unit) => (
-              <div key={unit}>
-                <div className="bg-[#fff0f5] rounded-3xl py-8 text-5xl font-black text-[#f43f5e]">
-                  00
-                </div>
-                <div className="text-sm md:text-base font-bold text-slate-400 mt-4 tracking-widest">
-                  {unit}
+          ) : (
+            <div className="max-w-3xl mx-auto bg-white rounded-[3.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500 relative">
+              <button
+                onClick={() => setSelectedLibraryItem(null)}
+                className="absolute top-8 right-8 z-10 bg-white/20 hover:bg-white/40 text-white p-3 rounded-full backdrop-blur-md transition-all"
+              >
+                <ArrowLeft size={28} />
+              </button>
+
+              <div
+                className={`bg-gradient-to-br ${selectedLibraryItem.color} p-16 md:p-20 text-center text-white relative`}
+              >
+                <span className="text-8xl block mb-6 drop-shadow-xl">
+                  {selectedLibraryItem.coverEmoji}
+                </span>
+                <p className="text-xl font-bold opacity-80 mb-2 tracking-widest">
+                  {selectedLibraryItem.date}
+                </p>
+                <h3 className="text-4xl md:text-5xl font-black">
+                  {selectedLibraryItem.title}
+                </h3>
+              </div>
+
+              <div className="p-12 md:p-16 text-slate-700 leading-relaxed text-2xl italic font-medium relative">
+                <Typewriter text={selectedLibraryItem.content} />
+
+                <div className="mt-16 pt-10 border-t-2 border-pink-50 text-right">
+                  <p className="font-black text-[#f43f5e] text-3xl mt-2 tracking-tight">
+                    Ký tên
+                  </p>
+                  <p className="font-bold text-slate-400 text-xl mt-1">
+                    Từ Thiên Gia Bảo💌
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
-          <p className="text-[#f43f5e] text-xl font-bold italic animate-bounce">
-            "Đang chờ Vy cho phép chạy..."
-          </p>
+            </div>
+          )}
         </div>
       </main>
     );
