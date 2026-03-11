@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Heart,
   ArrowLeft,
@@ -14,6 +14,11 @@ import {
   Image as ImageIcon,
   Lock,
   Unlock,
+  Radio,
+  Play,
+  Pause,
+  SkipForward,
+  SkipBack, // Đã thêm icon Quay lại bài trước
 } from "lucide-react";
 
 // --- COMPONENT CHỮ CHẠY ---
@@ -22,7 +27,6 @@ const Typewriter = ({ text }: { text: string }) => {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    // Reset khi text thay đổi (mở thư mới)
     setDisplayedText("");
     setIndex(0);
   }, [text]);
@@ -38,6 +42,214 @@ const Typewriter = ({ text }: { text: string }) => {
   }, [index, text]);
 
   return <p className="whitespace-pre-line leading-relaxed">{displayedText}</p>;
+};
+
+// --- COMPONENT: TRẠM PHÁT SÓNG TÌNH YÊU (BẢN HOÀN THIỆN XỊN XÒ) ---
+const TramPhatSong = () => {
+  // Playlist 10 bài hát của bạn
+  const PLAYLIST = [
+    {
+      src: "/audio/bai-1.mp3",
+      message: "Ưu tiên của tui Nguyễn Thanh Vy",
+    },
+    {
+      src: "/audio/bai-2.mp3",
+      message: "Bài này tui thấy dễ thương🥰",
+    },
+    {
+      src: "/audio/bai-3.mp3",
+      message: "Bài này tui nghĩ Vy sẽ thích đó, nghe đi nha! 🎵",
+    },
+    {
+      src: "/audio/bai-4.mp3",
+      message: "Nghe quen hông 5 điều phải nhớ đóaaaa 🎶",
+    },
+    {
+      src: "/audio/bai-5.mp3",
+      message: "Bỏ vào tại tui thích lyrics",
+    },
+    {
+      src: "/audio/bai-6.mp3",
+      message: "tiếp theo là một về tình yêu đáng eo khác ",
+    },
+    {
+      src: "/audio/bai-7.mp3",
+      message:
+        "Vy ghi chú bài này xong tui mê quớ thêm vào lun, Nghe xong bài này Vy nhớ cười một cái nha, Vy cười dethuong lắm!💖",
+    },
+    {
+      src: "/audio/bai-8.mp3",
+      message: "Vẫn là từ ghi chú",
+    },
+    {
+      src: "/audio/bai-9.mp3",
+      message: "Bài này nói j nữa guột lun",
+    },
+    {
+      src: "/audio/bai-10.mp3",
+      message:
+        "E hèm hông có ý chê chiều cao nhó thấy dễ thương là nhiềuuuu 😘",
+    },
+  ];
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState("0:00");
+  const [duration, setDuration] = useState("0:00");
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  const currentTrack = PLAYLIST[currentIndex];
+
+  // Đổi giây sang Phút:Giây
+  const formatTime = (time: number) => {
+    if (isNaN(time)) return "0:00";
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  };
+
+  // Xử lý nút Play/Pause
+  const handlePlayPause = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  // Xử lý nút Next (Chuyển bài)
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % PLAYLIST.length);
+  };
+
+  // Xử lý nút Prev (Lùi bài)
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev === 0 ? PLAYLIST.length - 1 : prev - 1));
+  };
+
+  // Cập nhật thanh tiến trình
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      const current = audioRef.current.currentTime;
+      const total = audioRef.current.duration;
+      setProgress((current / total) * 100);
+      setCurrentTime(formatTime(current));
+    }
+  };
+
+  // Lấy độ dài bài hát khi load xong
+  const handleLoadedMetadata = () => {
+    if (audioRef.current) {
+      setDuration(formatTime(audioRef.current.duration));
+    }
+  };
+
+  // Tua nhạc
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (audioRef.current) {
+      const newTime =
+        (Number(e.target.value) / 100) * audioRef.current.duration;
+      audioRef.current.currentTime = newTime;
+      setProgress(Number(e.target.value));
+    }
+  };
+
+  // Tự động Play bài mới nếu đang trong trạng thái Play mà bấm Next/Prev
+  useEffect(() => {
+    if (audioRef.current && isPlaying) {
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((error) => console.log("Audio play error:", error));
+      }
+    }
+  }, [currentIndex]);
+
+  return (
+    <div className="bg-[#fff0f5] p-6 md:p-8 rounded-[3rem] shadow-sm border border-pink-100 text-center w-full mt-6 relative overflow-hidden transition-all hover:shadow-md">
+      {/* Thẻ audio ẩn */}
+      <audio
+        ref={audioRef}
+        src={currentTrack.src}
+        onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={handleLoadedMetadata}
+        onEnded={handleNext} // Tự động chuyển bài khi hát hết
+      />
+
+      {/* Header của Trạm Phát Sóng */}
+      <div className="flex justify-center mb-4 relative z-10">
+        <div
+          className={`bg-white p-4 rounded-full shadow-sm transition-all duration-1000 ${
+            isPlaying ? "animate-pulse shadow-pink-200" : ""
+          }`}
+        >
+          <Radio className="w-8 h-8 text-[#f43f5e]" />
+        </div>
+      </div>
+      <h3 className="text-2xl font-black text-slate-700 mb-4 relative z-10">
+        Trạm Phát Sóng Tình Yêu
+      </h3>
+
+      {/* Màn hình hiển thị lời nhắn */}
+      <div className="min-h-[120px] flex flex-col items-center justify-center bg-white rounded-3xl p-6 mb-6 border border-pink-50 shadow-inner relative z-10 overflow-hidden">
+        <span className="absolute top-4 right-5 text-xs font-bold text-slate-300">
+          {currentIndex + 1} / {PLAYLIST.length}
+        </span>
+        <p className="text-slate-600 italic font-medium leading-relaxed text-lg md:text-xl transition-all duration-500">
+          "{currentTrack.message}"
+        </p>
+      </div>
+
+      {/* Thanh tiến trình (Progress Bar) */}
+      <div className="w-full mb-6 px-2 relative z-10">
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value={isNaN(progress) ? 0 : progress}
+          onChange={handleSeek}
+          className="w-full h-2 bg-pink-200 rounded-lg appearance-none cursor-pointer accent-[#f43f5e]"
+        />
+        <div className="flex justify-between mt-2 text-xs font-bold text-pink-400">
+          <span>{currentTime}</span>
+          <span>{duration}</span>
+        </div>
+      </div>
+
+      {/* Bộ nút điều khiển */}
+      <div className="flex items-center justify-center gap-6 relative z-10">
+        <button
+          onClick={handlePrev}
+          className="bg-white text-slate-400 hover:text-[#f43f5e] hover:bg-pink-50 rounded-full p-4 transition-all duration-300 shadow-sm border border-pink-50 flex items-center justify-center hover:scale-110"
+          title="Bài trước"
+        >
+          <SkipBack className="w-6 h-6 fill-currentColor" />
+        </button>
+
+        <button
+          onClick={handlePlayPause}
+          className="bg-gradient-to-r from-[#f43f5e] to-rose-400 hover:from-rose-500 hover:to-pink-500 text-white rounded-full p-5 transition-all duration-300 shadow-lg flex items-center justify-center hover:scale-110 active:scale-95"
+        >
+          {isPlaying ? (
+            <Pause className="w-8 h-8 fill-currentColor" />
+          ) : (
+            <Play className="w-8 h-8 ml-1 fill-currentColor" />
+          )}
+        </button>
+
+        <button
+          onClick={handleNext}
+          className="bg-white text-slate-400 hover:text-[#f43f5e] hover:bg-pink-50 rounded-full p-4 transition-all duration-300 shadow-sm border border-pink-50 flex items-center justify-center hover:scale-110"
+          title="Chuyển bài"
+        >
+          <SkipForward className="w-6 h-6 fill-currentColor" />
+        </button>
+      </div>
+    </div>
+  );
 };
 
 // --- DATA: 24 BỨC THƯ ---
@@ -230,24 +442,14 @@ const TIMELINE_DATA = [
   { year: "2028", status: "locked", events: [] },
 ];
 
-// --- DATA: THƯ VIỆN CẢM XÚC (NHỮNG NGÀY ĐẶC BIỆT) ---
+// --- DATA: THƯ VIỆN CẢM XÚC ---
 const LIBRARY_DATA = [
   {
     id: "8-3-2026",
     date: "08/03/2026",
     title: "Ngày Quốc Tế Phụ Nữ 8/3",
     coverEmoji: "💐",
-    content: `Gửi Ngoan Xinh Yêu Mang Tên Vy
-
-Tui không giỏi nói những lời mật ngọt, cũng chẳng biết phô trương tình cảm theo cách người ta thường làm. Tui chọn yêu Vy theo cách riêng của mình – một cách yêu không ồn ào, không khéo léo, nhưng luôn chân thật.
-
-Tình yêu của tui nằm trong những câu hỏi nhỏ nhặt mỗi ngày: "Vy ăn j chưa?", "Nào Vy zìa nói tui biết nhó", hay "Hôm nay có mệt lắm không?". Hoặc là những khi tui cảm thấy nhớ Vy tui không dám gọi hay phiền Vy mà chỉ lặng lẽ đọc lại từng dòng tin nhắn cũ rồi thầm cười . Nếu Vy để ý một chút, Vy sẽ thấy tình yêu của tui luôn hiện diện, kiên trì và cố gắng từng chút một. Có thể tui ít khi nói ra thành lời nhưng mong Vy hiểu là : Sự hiện diện của Vy luôn nằm trong mọi kế hoạch tương lai mà tui tính tới, tại tui sợ Vy bị áp lực hay khó chịu nên tui giấu hoy nhó.
-
-Nhân ngày 8/3 hôm nay, tui chúc Vy thật vui vẻ và hạnh phúc. Mong Vy luôn được trân trọng, bớt đi những áp lực cuộc sống và hãy cười thật nhiều nhé. Hãy cứ yêu thương bản thân thật tốt và luôn xinh đẹp theo cách của riêng mình.
-
-Vy nhớ nha: Bất cứ khi nào Vy không ổn, mong Vy nhớ rằng luôn có một người sẵn sàng ưu tiên để đến VY nhanh nhất.
-
- tái bút: tác giả đang rất muốn ôm Vy vào hôm nay nhưng mà dự kiến sẽ hơi chậm trễ mong Vy ghi nhớ và tính lãi thêm nhiều cái ôm khác `,
+    content: `Gửi Ngoan Xinh Yêu Mang Tên Vy\n\nTui không giỏi nói những lời mật ngọt, cũng chẳng biết phô trương tình cảm theo cách người ta thường làm. Tui chọn yêu Vy theo cách riêng của mình – một cách yêu không ồn ào, không khéo léo, nhưng luôn chân thật.\n\nTình yêu của tui nằm trong những câu hỏi nhỏ nhặt mỗi ngày: "Vy ăn j chưa?", "Nào Vy zìa nói tui biết nhó", hay "Hôm nay có mệt lắm không?". Hoặc là những khi tui cảm thấy nhớ Vy tui không dám gọi hay phiền Vy mà chỉ lặng lẽ đọc lại từng dòng tin nhắn cũ rồi thầm cười . Nếu Vy để ý một chút, Vy sẽ thấy tình yêu của tui luôn hiện diện, kiên trì và cố gắng từng chút một. Có thể tui ít khi nói ra thành lời nhưng mong Vy hiểu là : Sự hiện diện của Vy luôn nằm trong mọi kế hoạch tương lai mà tui tính tới, tại tui sợ Vy bị áp lực hay khó chịu nên tui giấu hoy nhó.\n\nNhân ngày 8/3 hôm nay, tui chúc Vy thật vui vẻ và hạnh phúc. Mong Vy luôn được trân trọng, bớt đi những áp lực cuộc sống và hãy cười thật nhiều nhé. Hãy cứ yêu thương bản thân thật tốt và luôn xinh đẹp theo cách của riêng mình.\n\nVy nhớ nha: Bất cứ khi nào Vy không ổn, mong Vy nhớ rằng luôn có một người sẵn sàng ưu tiên để đến VY nhanh nhất.\n\nTái bút: tác giả đang rất muốn ôm Vy vào hôm nay nhưng mà dự kiến sẽ hơi chậm trễ mong Vy ghi nhớ và tính lãi thêm nhiều cái ôm khác `,
     color: "from-pink-400 to-rose-300",
   },
   {
@@ -264,9 +466,7 @@ Vy nhớ nha: Bất cứ khi nào Vy không ổn, mong Vy nhớ rằng luôn có
     date: "17/02/2026",
     title: " Sinh nhật của Vy ",
     coverEmoji: "🎂",
-    content: `Lần đầu tiên tụi mình gặp nhau.
-Ấn tượng đầu tiên của tui là Vy nhỏ nhắn, đáng yêu y hệt như những gì tui từng hình dung. Không hiểu sao ở cạnh Vy, tui thấy bình yên và thoải mái lắm, thoải mái đến mức tui có thể tự nhiên kể cho Vy nghe những tâm sự mà tui vốn dĩ chẳng bao giờ muốn nói với ai.
-Tui hy vọng rằng, trên những chặng đường sắp tới, chúng ta sẽ luôn có cơ hội đồng hành cùng nhau. Chúc Vy của tui có một ngày sinh nhật thật vui vẻ, ấm áp và luôn cười thật tươi nhé`,
+    content: `Lần đầu tiên tụi mình gặp nhau.\nẤn tượng đầu tiên của tui là Vy nhỏ nhắn, đáng yêu y hệt như những gì tui từng hình dung. Không hiểu sao ở cạnh Vy, tui thấy bình yên và thoải mái lắm, thoải mái đến mức tui có thể tự nhiên kể cho Vy nghe những tâm sự mà tui vốn dĩ chẳng bao giờ muốn nói với ai.\nTui hy vọng rằng, trên những chặng đường sắp tới, chúng ta sẽ luôn có cơ hội đồng hành cùng nhau. Chúc Vy của tui có một ngày sinh nhật thật vui vẻ, ấm áp và luôn cười thật tươi nhé`,
     color: "from-rose-400 to-red-400",
   },
 ];
@@ -276,7 +476,6 @@ export default function Home() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
 
-  // Đổi timer thành library ở đây
   const [view, setView] = useState<"home" | "timeline" | "library" | "letters">(
     "home",
   );
@@ -284,8 +483,6 @@ export default function Home() {
   const [selectedLetter, setSelectedLetter] = useState<
     (typeof LETTERS_DATA)[0] | null
   >(null);
-
-  // State mới cho Thư Viện Cảm Xúc
   const [selectedLibraryItem, setSelectedLibraryItem] = useState<
     (typeof LIBRARY_DATA)[0] | null
   >(null);
@@ -307,7 +504,11 @@ export default function Home() {
     return (
       <main className="min-h-screen bg-[#fff0f5] flex items-center justify-center p-6 md:p-12">
         <div
-          className={`bg-white p-12 md:p-16 rounded-[3.5rem] shadow-2xl max-w-xl w-full text-center transition-all ${error ? "animate-shake border-4 border-red-300" : "border-4 border-white"}`}
+          className={`bg-white p-12 md:p-16 rounded-[3.5rem] shadow-2xl max-w-xl w-full text-center transition-all ${
+            error
+              ? "animate-shake border-4 border-red-300"
+              : "border-4 border-white"
+          }`}
         >
           <div className="w-28 h-28 bg-pink-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl">
             <Lock className="text-white" size={48} />
@@ -367,16 +568,16 @@ export default function Home() {
             Góc nhỏ của Vy{" "}
             <Heart className="fill-[#f43f5e] text-[#f43f5e]" size={48} />
           </h1>
-          <p className="text-slate-500 text-xl md:text-2xl italic mb-12">
+          <p className="text-slate-500 text-xl md:text-2xl italic mb-10">
             "Chào mừng Vy đã vào nhaa."
           </p>
+
           <div className="flex flex-col gap-6">
             <MenuBtn
               icon={<Calendar size={32} />}
               label="Dòng Thời Gian"
               onClick={() => setView("timeline")}
             />
-            {/* Đã sửa dòng này thành Thư Viện Cảm Xúc */}
             <MenuBtn
               icon={<Sparkles size={32} />}
               label="Thư Viện Cảm Xúc"
@@ -388,12 +589,14 @@ export default function Home() {
               onClick={() => setView("letters")}
             />
           </div>
+
+          <TramPhatSong />
         </div>
       </main>
     );
   }
 
-  // 3. MÀN HÌNH THƯ VIỆN CẢM XÚC (LIBRARY - Thay cho Timer cũ)
+  // 3. MÀN HÌNH THƯ VIỆN CẢM XÚC (LIBRARY)
   if (view === "library") {
     return (
       <main className="min-h-screen bg-[#fff0f5] p-6 md:p-12 flex flex-col items-center justify-center">
@@ -502,7 +705,11 @@ export default function Home() {
             {TIMELINE_DATA.map((yearBlock, idx) => (
               <div key={idx} className="relative pl-24">
                 <div
-                  className={`absolute left-0 w-16 h-16 rounded-full flex items-center justify-center border-4 border-white z-10 shadow-xl ${yearBlock.status === "unlocked" ? "bg-[#f43f5e]" : "bg-slate-300"}`}
+                  className={`absolute left-0 w-16 h-16 rounded-full flex items-center justify-center border-4 border-white z-10 shadow-xl ${
+                    yearBlock.status === "unlocked"
+                      ? "bg-[#f43f5e]"
+                      : "bg-slate-300"
+                  }`}
                 >
                   {yearBlock.status === "unlocked" ? (
                     <Star size={32} className="text-white fill-white" />
@@ -511,7 +718,11 @@ export default function Home() {
                   )}
                 </div>
                 <h3
-                  className={`text-5xl font-black mb-10 ${yearBlock.status === "unlocked" ? "text-[#f43f5e]" : "text-slate-400"}`}
+                  className={`text-5xl font-black mb-10 ${
+                    yearBlock.status === "unlocked"
+                      ? "text-[#f43f5e]"
+                      : "text-slate-400"
+                  }`}
                 >
                   Năm {yearBlock.year} {yearBlock.status === "locked" && "🔒"}
                 </h3>
