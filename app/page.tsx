@@ -11,14 +11,14 @@ import {
   Coffee,
   ChevronRight,
   Star,
-  Image as ImageIcon,
   Lock,
   Unlock,
   Radio,
   Play,
   Pause,
   SkipForward,
-  SkipBack, // Đã thêm icon Quay lại bài trước
+  SkipBack,
+  Lightbulb,
 } from "lucide-react";
 
 // --- COMPONENT CHỮ CHẠY ---
@@ -44,18 +44,32 @@ const Typewriter = ({ text }: { text: string }) => {
   return <p className="whitespace-pre-line leading-relaxed">{displayedText}</p>;
 };
 
-// --- COMPONENT: TRẠM PHÁT SÓNG TÌNH YÊU (BẢN HOÀN THIỆN XỊN XÒ) ---
+// --- COMPONENT NÚT MENU ---
+const MenuBtn = ({
+  icon,
+  label,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  onClick: () => void;
+}) => {
+  return (
+    <button
+      onClick={onClick}
+      className="flex items-center justify-center gap-4 bg-pink-50 hover:bg-pink-100 text-[#f43f5e] font-bold text-xl md:text-2xl py-5 px-8 rounded-full transition-all duration-300 shadow-sm hover:shadow-md hover:scale-105 border border-pink-200"
+    >
+      {icon}
+      {label}
+    </button>
+  );
+};
+
+// --- COMPONENT: TRẠM PHÁT SÓNG TÌNH YÊU ---
 const TramPhatSong = () => {
-  // Playlist 10 bài hát của bạn
   const PLAYLIST = [
-    {
-      src: "/audio/bai-1.mp3",
-      message: "Ưu tiên của tui Nguyễn Thanh Vy",
-    },
-    {
-      src: "/audio/bai-2.mp3",
-      message: "Bài này tui thấy dễ thương🥰",
-    },
+    { src: "/audio/bai-1.mp3", message: "Ưu tiên của tui Nguyễn Thanh Vy" },
+    { src: "/audio/bai-2.mp3", message: "Bài này tui thấy dễ thương🥰" },
     {
       src: "/audio/bai-3.mp3",
       message: "Bài này tui nghĩ Vy sẽ thích đó, nghe đi nha! 🎵",
@@ -64,27 +78,18 @@ const TramPhatSong = () => {
       src: "/audio/bai-4.mp3",
       message: "Nghe quen hông 5 điều phải nhớ đóaaaa 🎶",
     },
-    {
-      src: "/audio/bai-5.mp3",
-      message: "Bỏ vào tại tui thích lyrics",
-    },
+    { src: "/audio/bai-5.mp3", message: "Bỏ vào tại tui thích lyrics" },
     {
       src: "/audio/bai-6.mp3",
-      message: "tiếp theo là một về tình yêu đáng eo khác ",
+      message: "tiếp theo là một bài về tình yêu đáng eo khác ",
     },
     {
       src: "/audio/bai-7.mp3",
       message:
         "Vy ghi chú bài này xong tui mê quớ thêm vào lun, Nghe xong bài này Vy nhớ cười một cái nha, Vy cười dethuong lắm!💖",
     },
-    {
-      src: "/audio/bai-8.mp3",
-      message: "Vẫn là từ ghi chú",
-    },
-    {
-      src: "/audio/bai-9.mp3",
-      message: "Bài này nói j nữa guột lun",
-    },
+    { src: "/audio/bai-8.mp3", message: "Vẫn là từ ghi chú" },
+    { src: "/audio/bai-9.mp3", message: "Bài này nói j nữa guột lun" },
     {
       src: "/audio/bai-10.mp3",
       message:
@@ -101,7 +106,6 @@ const TramPhatSong = () => {
 
   const currentTrack = PLAYLIST[currentIndex];
 
-  // Đổi giây sang Phút:Giây
   const formatTime = (time: number) => {
     if (isNaN(time)) return "0:00";
     const minutes = Math.floor(time / 60);
@@ -109,7 +113,6 @@ const TramPhatSong = () => {
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
-  // Xử lý nút Play/Pause
   const handlePlayPause = () => {
     if (audioRef.current) {
       if (isPlaying) {
@@ -121,17 +124,14 @@ const TramPhatSong = () => {
     }
   };
 
-  // Xử lý nút Next (Chuyển bài)
   const handleNext = () => {
     setCurrentIndex((prev) => (prev + 1) % PLAYLIST.length);
   };
 
-  // Xử lý nút Prev (Lùi bài)
   const handlePrev = () => {
     setCurrentIndex((prev) => (prev === 0 ? PLAYLIST.length - 1 : prev - 1));
   };
 
-  // Cập nhật thanh tiến trình
   const handleTimeUpdate = () => {
     if (audioRef.current) {
       const current = audioRef.current.currentTime;
@@ -141,14 +141,12 @@ const TramPhatSong = () => {
     }
   };
 
-  // Lấy độ dài bài hát khi load xong
   const handleLoadedMetadata = () => {
     if (audioRef.current) {
       setDuration(formatTime(audioRef.current.duration));
     }
   };
 
-  // Tua nhạc
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (audioRef.current) {
       const newTime =
@@ -158,7 +156,6 @@ const TramPhatSong = () => {
     }
   };
 
-  // Tự động Play bài mới nếu đang trong trạng thái Play mà bấm Next/Prev
   useEffect(() => {
     if (audioRef.current && isPlaying) {
       const playPromise = audioRef.current.play();
@@ -170,21 +167,16 @@ const TramPhatSong = () => {
 
   return (
     <div className="bg-[#fff0f5] p-6 md:p-8 rounded-[3rem] shadow-sm border border-pink-100 text-center w-full mt-6 relative overflow-hidden transition-all hover:shadow-md">
-      {/* Thẻ audio ẩn */}
       <audio
         ref={audioRef}
         src={currentTrack.src}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
-        onEnded={handleNext} // Tự động chuyển bài khi hát hết
+        onEnded={handleNext}
       />
-
-      {/* Header của Trạm Phát Sóng */}
       <div className="flex justify-center mb-4 relative z-10">
         <div
-          className={`bg-white p-4 rounded-full shadow-sm transition-all duration-1000 ${
-            isPlaying ? "animate-pulse shadow-pink-200" : ""
-          }`}
+          className={`bg-white p-4 rounded-full shadow-sm transition-all duration-1000 ${isPlaying ? "animate-pulse shadow-pink-200" : ""}`}
         >
           <Radio className="w-8 h-8 text-[#f43f5e]" />
         </div>
@@ -192,8 +184,6 @@ const TramPhatSong = () => {
       <h3 className="text-2xl font-black text-slate-700 mb-4 relative z-10">
         Trạm Phát Sóng Tình Yêu
       </h3>
-
-      {/* Màn hình hiển thị lời nhắn */}
       <div className="min-h-[120px] flex flex-col items-center justify-center bg-white rounded-3xl p-6 mb-6 border border-pink-50 shadow-inner relative z-10 overflow-hidden">
         <span className="absolute top-4 right-5 text-xs font-bold text-slate-300">
           {currentIndex + 1} / {PLAYLIST.length}
@@ -202,8 +192,6 @@ const TramPhatSong = () => {
           "{currentTrack.message}"
         </p>
       </div>
-
-      {/* Thanh tiến trình (Progress Bar) */}
       <div className="w-full mb-6 px-2 relative z-10">
         <input
           type="range"
@@ -218,8 +206,6 @@ const TramPhatSong = () => {
           <span>{duration}</span>
         </div>
       </div>
-
-      {/* Bộ nút điều khiển */}
       <div className="flex items-center justify-center gap-6 relative z-10">
         <button
           onClick={handlePrev}
@@ -228,7 +214,6 @@ const TramPhatSong = () => {
         >
           <SkipBack className="w-6 h-6 fill-currentColor" />
         </button>
-
         <button
           onClick={handlePlayPause}
           className="bg-gradient-to-r from-[#f43f5e] to-rose-400 hover:from-rose-500 hover:to-pink-500 text-white rounded-full p-5 transition-all duration-300 shadow-lg flex items-center justify-center hover:scale-110 active:scale-95"
@@ -239,7 +224,6 @@ const TramPhatSong = () => {
             <Play className="w-8 h-8 ml-1 fill-currentColor" />
           )}
         </button>
-
         <button
           onClick={handleNext}
           className="bg-white text-slate-400 hover:text-[#f43f5e] hover:bg-pink-50 rounded-full p-4 transition-all duration-300 shadow-sm border border-pink-50 flex items-center justify-center hover:scale-110"
@@ -248,6 +232,176 @@ const TramPhatSong = () => {
           <SkipForward className="w-6 h-6 fill-currentColor" />
         </button>
       </div>
+    </div>
+  );
+};
+
+// --- COMPONENT: GÓC HẸN HÒ ---
+const GocHenHo = ({ onBack }: { onBack: () => void }) => {
+  const [activeTab, setActiveTab] = useState<"bucket" | "random">("bucket");
+
+  const [bucketList, setBucketList] = useState([
+    { id: 1, title: "Đi Đà Lạt săn mây", emoji: "🌲", done: false },
+    { id: 2, title: "Đi Vũng Tàu ăn hải sản", emoji: "🌊", done: false },
+    { id: 3, title: "Đi Vĩnh Hy ngắm biển", emoji: "🏝️", done: false },
+    { id: 4, title: "Đi Đà Nẵng qua cầu Rồng", emoji: "🌉", done: false },
+    { id: 5, title: "Xem phim kinh dị cùng nhau", emoji: "👻", done: false },
+    { id: 6, title: "Đi dạo buổi tối hóng gió", emoji: "🌙", done: false },
+    { id: 7, title: "Đi workshop làm gốm", emoji: "🏺", done: false },
+    { id: 8, title: "Đi bắn cung giải trí", emoji: "🏹", done: false },
+    { id: 9, title: "Đi đua xe Go-kart", emoji: "🏎️", done: false },
+    { id: 10, title: "Đi bắn súng paintball/laser", emoji: "🔫", done: false },
+    { id: 11, title: "Đi dạo chợ hoa", emoji: "🌻", done: false },
+    { id: 12, title: "Quẩy ở Lễ hội âm nhạc", emoji: "🎵", done: false },
+    { id: 13, title: "Đi công viên dã ngoại", emoji: "🧺", done: false },
+    { id: 14, title: "Đi chụp hình Photobooth", emoji: "📸", done: false },
+    { id: 15, title: "Chơi nhà ma Escape Room", emoji: "🧟‍♂️", done: false },
+    { id: 16, title: "Đi trượt tuyết", emoji: "⛷️", done: false },
+    { id: 17, title: "Đi trượt patin", emoji: "🛼", done: false },
+    { id: 18, title: "Đi tô tượng thư giãn", emoji: "🎨", done: false },
+  ]);
+
+  const toggleBucketItem = (id: number) => {
+    setBucketList(
+      bucketList.map((item) =>
+        item.id === id ? { ...item, done: !item.done } : item,
+      ),
+    );
+  };
+
+  const [isSpinning, setIsSpinning] = useState(false);
+  const [randomResult, setRandomResult] = useState(
+    "Bấm nút để chọn đồ ăn đi Vy ơi! 🎯",
+  );
+
+  const RANDOM_FOOD = [
+    "Ăn Bún bò Huế  🍜",
+    "Ăn Phở bò ngon ngon",
+    "Ăn Cơm tấm sườn bì chả 🍛",
+    "Ăn Cơm gà xối mỡ 🍗",
+    "Ăn Gà rán giòn rụm 🍗",
+    "Ăn Hủ tiếu Nam Vang 🍲",
+    "Đi ăn Đồ Hàn  🥘",
+    "Đi ăn Đồ Âu  🍝",
+    "Đi ăn Đồ Nhật  🍣",
+    "Đi ăn Đồ Thái 🍲",
+    "Đi ăn Há Cảo / Dimsum 🥟",
+    "Thách thức Mì cay 7 cấp độ 🌶️",
+    "Ăn Lẩu chay thanh tịnh 🌱",
+  ];
+
+  const handleSpin = () => {
+    if (isSpinning) return;
+    setIsSpinning(true);
+    let times = 0;
+    const interval = setInterval(() => {
+      setRandomResult(
+        RANDOM_FOOD[Math.floor(Math.random() * RANDOM_FOOD.length)],
+      );
+      times++;
+      if (times > 25) {
+        clearInterval(interval);
+        setIsSpinning(false);
+        setRandomResult(
+          RANDOM_FOOD[Math.floor(Math.random() * RANDOM_FOOD.length)],
+        );
+      }
+    }, 80);
+  };
+
+  return (
+    <div className="max-w-5xl w-full mx-auto bg-white p-8 md:p-12 rounded-[3rem] shadow-2xl text-center border-2 border-pink-50 relative overflow-hidden mt-10">
+      <button
+        onClick={onBack}
+        className="absolute top-8 left-8 text-[#f43f5e] hover:bg-pink-50 p-3 rounded-full transition-all"
+      >
+        <ArrowLeft size={28} />
+      </button>
+
+      <h1 className="text-4xl md:text-5xl font-black text-[#f43f5e] mb-4 flex items-center justify-center gap-3 mt-8 md:mt-0">
+        Góc Hẹn Hò{" "}
+        <Lightbulb className="text-yellow-400 fill-yellow-400" size={40} />
+      </h1>
+      <p className="text-slate-500 text-lg md:text-xl italic mb-8">
+        "Lưu lại những nơi và những việc tui muốn tụi mình cùng đi và cùng
+        làm,..."
+      </p>
+
+      <div className="flex justify-center gap-4 mb-10 bg-pink-50 p-2 rounded-full w-fit mx-auto shadow-inner">
+        <button
+          onClick={() => setActiveTab("bucket")}
+          className={`px-6 py-3 rounded-full font-bold text-lg md:text-xl transition-all ${activeTab === "bucket" ? "bg-white text-[#f43f5e] shadow-md" : "text-slate-400 hover:text-pink-400"}`}
+        >
+          📋 Bucket List
+        </button>
+        <button
+          onClick={() => setActiveTab("random")}
+          className={`px-6 py-3 rounded-full font-bold text-lg md:text-xl transition-all ${activeTab === "random" ? "bg-white text-[#f43f5e] shadow-md" : "text-slate-400 hover:text-pink-400"}`}
+        >
+          🎡 Hôm Nay Ăn Gì?
+        </button>
+      </div>
+
+      {activeTab === "bucket" && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500 h-[50vh] overflow-y-auto pr-2 text-left custom-scrollbar">
+          {bucketList.map((item) => (
+            <div
+              key={item.id}
+              onClick={() => toggleBucketItem(item.id)}
+              className={`flex items-center gap-4 p-4 rounded-3xl border-2 cursor-pointer transition-all hover:scale-105 active:scale-95 ${item.done ? "bg-green-50 border-green-200" : "bg-white border-pink-100 hover:border-pink-300 shadow-sm"}`}
+            >
+              <div
+                className={`w-12 h-12 shrink-0 rounded-full flex items-center justify-center text-2xl transition-all ${item.done ? "bg-green-400 text-white" : "bg-slate-100 text-slate-400"}`}
+              >
+                {item.done ? "✔️" : item.emoji}
+              </div>
+              <span
+                className={`text-base font-bold transition-all flex-1 ${item.done ? "text-green-600 line-through opacity-70" : "text-slate-700"}`}
+              >
+                {item.title}
+              </span>
+            </div>
+          ))}
+          <style jsx>{`
+            .custom-scrollbar::-webkit-scrollbar {
+              width: 8px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+              background: #fff0f5;
+              border-radius: 10px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+              background: #fbcfe8;
+              border-radius: 10px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+              background: #f472b6;
+            }
+          `}</style>
+        </div>
+      )}
+
+      {activeTab === "random" && (
+        <div className="flex flex-col items-center justify-center p-10 md:p-16 bg-gradient-to-br from-pink-50 to-rose-50 rounded-[3rem] border-4 border-dashed border-pink-200 animate-in fade-in zoom-in-95 duration-500">
+          <div className="text-8xl md:text-9xl mb-8">
+            {isSpinning ? "🌀" : "🤤"}
+          </div>
+          <div className="min-h-[120px] flex items-center justify-center px-8 py-6 bg-white rounded-3xl shadow-inner w-full md:w-3/4 mx-auto border-2 border-pink-100 mb-10">
+            <h2
+              className={`text-3xl md:text-4xl font-black transition-all duration-100 ${isSpinning ? "text-slate-400 blur-[1px] scale-105" : "text-[#f43f5e] scale-100"}`}
+            >
+              {randomResult}
+            </h2>
+          </div>
+          <button
+            onClick={handleSpin}
+            disabled={isSpinning}
+            className={`px-12 py-6 bg-gradient-to-r from-[#f43f5e] to-rose-400 text-white rounded-full font-black text-2xl shadow-xl hover:shadow-2xl transition-all flex items-center gap-3 ${isSpinning ? "opacity-50 cursor-not-allowed scale-95" : "hover:scale-110 active:scale-95"}`}
+          >
+            {isSpinning ? "Đang chọn món..." : "Vy nhấn chọn món iii! 🎲"}
+          </button>
+        </div>
+      )}
     </div>
   );
 };
@@ -455,7 +609,7 @@ const LIBRARY_DATA = [
   {
     id: "14-2-2026",
     date: "14/02/2026",
-    title: "Valentine Đầu Tiên ",
+    title: "Valentine Đầu Tiên",
     coverEmoji: "🍫",
     content:
       "Món quà này tui đã ấp ủ làm cho Vy từ lâu rồi. Mong là góc nhỏ này sẽ khiến Vy vui và bất ngờ. Cảm ơn Vy vì đã xuất hiện trong thế giới của tui...",
@@ -464,7 +618,7 @@ const LIBRARY_DATA = [
   {
     id: "17-2-2026",
     date: "17/02/2026",
-    title: " Sinh nhật của Vy ",
+    title: "Sinh nhật của Vy",
     coverEmoji: "🎂",
     content: `Lần đầu tiên tụi mình gặp nhau.\nẤn tượng đầu tiên của tui là Vy nhỏ nhắn, đáng yêu y hệt như những gì tui từng hình dung. Không hiểu sao ở cạnh Vy, tui thấy bình yên và thoải mái lắm, thoải mái đến mức tui có thể tự nhiên kể cho Vy nghe những tâm sự mà tui vốn dĩ chẳng bao giờ muốn nói với ai.\nTui hy vọng rằng, trên những chặng đường sắp tới, chúng ta sẽ luôn có cơ hội đồng hành cùng nhau. Chúc Vy của tui có một ngày sinh nhật thật vui vẻ, ấm áp và luôn cười thật tươi nhé`,
     color: "from-rose-400 to-red-400",
@@ -476,9 +630,9 @@ export default function Home() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
 
-  const [view, setView] = useState<"home" | "timeline" | "library" | "letters">(
-    "home",
-  );
+  const [view, setView] = useState<
+    "home" | "timeline" | "library" | "letters" | "dating"
+  >("home");
 
   const [selectedLetter, setSelectedLetter] = useState<
     (typeof LETTERS_DATA)[0] | null
@@ -499,16 +653,11 @@ export default function Home() {
     }
   };
 
-  // 1. MÀN HÌNH KHÓA (LOCK SCREEN)
   if (isLocked) {
     return (
       <main className="min-h-screen bg-[#fff0f5] flex items-center justify-center p-6 md:p-12">
         <div
-          className={`bg-white p-12 md:p-16 rounded-[3.5rem] shadow-2xl max-w-xl w-full text-center transition-all ${
-            error
-              ? "animate-shake border-4 border-red-300"
-              : "border-4 border-white"
-          }`}
+          className={`bg-white p-12 md:p-16 rounded-[3.5rem] shadow-2xl max-w-xl w-full text-center transition-all ${error ? "animate-shake border-4 border-red-300" : "border-4 border-white"}`}
         >
           <div className="w-28 h-28 bg-pink-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl">
             <Lock className="text-white" size={48} />
@@ -559,7 +708,6 @@ export default function Home() {
     );
   }
 
-  // 2. MÀN HÌNH CHÍNH (HOME)
   if (view === "home") {
     return (
       <main className="min-h-screen bg-[#fff0f5] flex items-center justify-center p-6 animate-in fade-in zoom-in duration-700">
@@ -571,7 +719,6 @@ export default function Home() {
           <p className="text-slate-500 text-xl md:text-2xl italic mb-10">
             "Chào mừng Vy đã vào nhaa."
           </p>
-
           <div className="flex flex-col gap-6">
             <MenuBtn
               icon={<Calendar size={32} />}
@@ -588,15 +735,18 @@ export default function Home() {
               label="Những Bức Thư"
               onClick={() => setView("letters")}
             />
+            <MenuBtn
+              icon={<Coffee size={32} />}
+              label="Ý Tưởng Hẹn Hò 💡"
+              onClick={() => setView("dating")}
+            />
           </div>
-
           <TramPhatSong />
         </div>
       </main>
     );
   }
 
-  // 3. MÀN HÌNH THƯ VIỆN CẢM XÚC (LIBRARY)
   if (view === "library") {
     return (
       <main className="min-h-screen bg-[#fff0f5] p-6 md:p-12 flex flex-col items-center justify-center">
@@ -609,7 +759,6 @@ export default function Home() {
               <ArrowLeft size={32} /> Quay về
             </button>
           )}
-
           {!selectedLibraryItem ? (
             <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
               <div className="text-center mb-16">
@@ -621,7 +770,6 @@ export default function Home() {
                   "Gửi em vào những ngày đặc biệt nhất..."
                 </p>
               </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {LIBRARY_DATA.map((item) => (
                   <button
@@ -655,7 +803,6 @@ export default function Home() {
               >
                 <ArrowLeft size={28} />
               </button>
-
               <div
                 className={`bg-gradient-to-br ${selectedLibraryItem.color} p-16 md:p-20 text-center text-white relative`}
               >
@@ -669,10 +816,8 @@ export default function Home() {
                   {selectedLibraryItem.title}
                 </h3>
               </div>
-
               <div className="p-12 md:p-16 text-slate-700 leading-relaxed text-2xl italic font-medium relative">
                 <Typewriter text={selectedLibraryItem.content} />
-
                 <div className="mt-16 pt-10 border-t-2 border-pink-50 text-right">
                   <p className="font-black text-[#f43f5e] text-3xl mt-2 tracking-tight">
                     Ký tên
@@ -689,7 +834,6 @@ export default function Home() {
     );
   }
 
-  // 4. MÀN HÌNH TIMELINE
   if (view === "timeline") {
     return (
       <main className="min-h-screen bg-[#fff0f5] p-6 md:p-16">
@@ -705,11 +849,7 @@ export default function Home() {
             {TIMELINE_DATA.map((yearBlock, idx) => (
               <div key={idx} className="relative pl-24">
                 <div
-                  className={`absolute left-0 w-16 h-16 rounded-full flex items-center justify-center border-4 border-white z-10 shadow-xl ${
-                    yearBlock.status === "unlocked"
-                      ? "bg-[#f43f5e]"
-                      : "bg-slate-300"
-                  }`}
+                  className={`absolute left-0 w-16 h-16 rounded-full flex items-center justify-center border-4 border-white z-10 shadow-xl ${yearBlock.status === "unlocked" ? "bg-[#f43f5e]" : "bg-slate-300"}`}
                 >
                   {yearBlock.status === "unlocked" ? (
                     <Star size={32} className="text-white fill-white" />
@@ -718,11 +858,7 @@ export default function Home() {
                   )}
                 </div>
                 <h3
-                  className={`text-5xl font-black mb-10 ${
-                    yearBlock.status === "unlocked"
-                      ? "text-[#f43f5e]"
-                      : "text-slate-400"
-                  }`}
+                  className={`text-5xl font-black mb-10 ${yearBlock.status === "unlocked" ? "text-[#f43f5e]" : "text-slate-400"}`}
                 >
                   Năm {yearBlock.year} {yearBlock.status === "locked" && "🔒"}
                 </h3>
@@ -765,7 +901,6 @@ export default function Home() {
     );
   }
 
-  // 5. MÀN HÌNH BỨC THƯ (LETTERS)
   if (view === "letters") {
     return (
       <main className="min-h-screen bg-[#fff0f5] p-6 md:p-12">
@@ -778,7 +913,6 @@ export default function Home() {
               <ArrowLeft size={32} /> Quay về trang chủ
             </button>
           )}
-
           {!selectedLetter ? (
             <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
               <div className="text-center mb-16">
@@ -827,20 +961,13 @@ export default function Home() {
               </div>
               <div className="p-16 md:p-24 text-slate-700 leading-relaxed text-3xl italic font-medium">
                 <Typewriter text={selectedLetter.content} />
-                <div className="mt-20 pt-16 border-t-2 border-[#fff0f5] text-center">
-                  <Coffee className="mx-auto text-pink-200 mb-6" size={56} />
-                  <p className="text-2xl text-slate-400 italic mb-2">
-                    Thương Vy rất nhiều,
+                <div className="mt-20 pt-16 border-t-2 border-pink-50 text-right">
+                  <p className="font-black text-[#f43f5e] text-3xl mt-2 tracking-tight">
+                    Ký tên
                   </p>
-                  <p className="font-black text-[#f43f5e] text-5xl mt-2 tracking-tight">
-                    Từ Tui 💌
+                  <p className="font-bold text-slate-400 text-xl mt-1">
+                    Từ Thiên Gia Bảo💌
                   </p>
-                  <button
-                    onClick={() => setSelectedLetter(null)}
-                    className="mt-16 px-14 py-6 bg-[#fff0f5] text-[#f43f5e] rounded-full font-black text-2xl hover:bg-pink-100 hover:scale-105 transition-all shadow-md"
-                  >
-                    Gấp thư lại
-                  </button>
                 </div>
               </div>
             </div>
@@ -850,24 +977,14 @@ export default function Home() {
     );
   }
 
+  // --- TRANG: GÓC HẸN HÒ ---
+  if (view === "dating") {
+    return (
+      <main className="min-h-screen bg-[#fff0f5] p-6 md:p-12 flex flex-col items-center justify-center animate-in zoom-in duration-500">
+        <GocHenHo onBack={() => setView("home")} />
+      </main>
+    );
+  }
+
   return null;
 }
-
-// Sub-component Menu Button To Bự
-const MenuBtn = ({ icon, label, onClick }: any) => (
-  <button
-    onClick={onClick}
-    className="w-full flex items-center justify-between p-8 md:p-10 bg-[#fff0f5] rounded-[3rem] hover:bg-pink-100 hover:shadow-xl hover:-translate-y-1 transition-all group"
-  >
-    <div className="flex items-center gap-6 text-[#f43f5e] group-hover:scale-110 transition-transform">
-      {icon}
-      <span className="text-2xl md:text-3xl font-black text-[#1e293b] group-hover:text-[#f43f5e]">
-        {label}
-      </span>
-    </div>
-    <ChevronRight
-      size={36}
-      className="text-[#f43f5e] group-hover:translate-x-3 transition-all"
-    />
-  </button>
-);
