@@ -625,7 +625,7 @@ const LIBRARY_DATA = [
   },
   {
     id: "17-4-2026",
-    date: "17/02/2026",
+    date: "17/04/2026",
     title: "Tốt nghiệp của cục dàng",
     coverEmoji: "💐",
     content: `Chào em nha, cục dàng dễ thương của anh.
