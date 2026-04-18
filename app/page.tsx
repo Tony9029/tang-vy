@@ -623,6 +623,24 @@ const LIBRARY_DATA = [
     content: `Lần đầu tiên tụi mình gặp nhau.\nẤn tượng đầu tiên của tui là Vy nhỏ nhắn, đáng yêu y hệt như những gì tui từng hình dung. Không hiểu sao ở cạnh Vy, tui thấy bình yên và thoải mái lắm, thoải mái đến mức tui có thể tự nhiên kể cho Vy nghe những tâm sự mà tui vốn dĩ chẳng bao giờ muốn nói với ai.\nTui hy vọng rằng, trên những chặng đường sắp tới, chúng ta sẽ luôn có cơ hội đồng hành cùng nhau. Chúc Vy của tui có một ngày sinh nhật thật vui vẻ, ấm áp và luôn cười thật tươi nhé`,
     color: "from-rose-400 to-red-400",
   },
+  {
+    id: "17-4-2026",
+    date: "17/02/2026",
+    title: "Tốt nghiệp của cục dàng",
+    coverEmoji: "💐",
+    content: `Chào em nha, cục dàng dễ thương của anh.
+
+Anh thấy mình thật may mắn khi được cùng em đi qua một cột mốc rất đẹp trong cuộc đời – ngày em tốt nghiệp. Khoảnh khắc này không chỉ đáng nhớ với em, mà với anh cũng là một niềm tự hào rất lớn.
+
+Sau này, dù con đường phía trước có như thế nào, anh vẫn luôn tin rằng em sẽ tiếp tục tỏa sáng theo cách riêng của mình. Hãy cứ trải nghiệm thật nhiều, học hỏi thật nhiều em nhé. Con đường sau giảng đường chắc chắn sẽ có những chông gai và thử thách, nhưng em đừng lo. Nếu có lúc mệt mỏi hay áp lực quá, cứ dựa vào anh. Anh sẽ luôn ở đây, ở cạnh em, bảo bọc em, và đưa em về “nhà” – nơi có cơm ngon đợi cửa, trà sữa luôn đầy ly.
+
+Mệt thì cứ nhõng nhẽo với anh, buồn thì cứ than thở với anh, có chuyện gì không vui hay ai làm em buồn cũng méc cho anh nghe nha. Anh nói rồi mà, anh sẽ luôn là “đồng minh” đáng tin cậy nhất của cục dàng – chỉ sau ba mẹ thôi.
+
+Anh thương em rất nhiều, Thanh Vy à – cục dàng của anh. Moahhh.
+
+Từ Thiên Gia Bảo`,
+    color: "from-rose-400 to-red-400",
+  },
 ];
 
 export default function Home() {
