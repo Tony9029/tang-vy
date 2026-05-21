@@ -19,7 +19,14 @@ import {
   SkipForward,
   SkipBack,
   Lightbulb,
+  Plus,
 } from "lucide-react";
+import {
+  getGocHenHoItems,
+  saveGocHenHoItems,
+  deleteItemAction,
+  DateItem,
+} from "@/app/actions";
 
 // --- COMPONENT CHỮ CHẠY ---
 const Typewriter = ({ text }: { text: string }) => {
@@ -236,78 +243,107 @@ const TramPhatSong = () => {
   );
 };
 
-// --- COMPONENT: GÓC HẸN HÒ ---
+// --- COMPONENT: GÓC HẸN HÒ (ĐÃ FIX ĐẦY ĐỦ TÍNH NĂNG XÓA) ---
 const GocHenHo = ({ onBack }: { onBack: () => void }) => {
   const [activeTab, setActiveTab] = useState<"bucket" | "random">("bucket");
+  const [bucketList, setBucketList] = useState<DateItem[]>([]);
+  const [foodList, setFoodList] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [bucketList, setBucketList] = useState([
-    { id: 1, title: "Đi Đà Lạt săn mây", emoji: "🌲", done: false },
-    { id: 2, title: "Đi Vũng Tàu ăn hải sản", emoji: "🌊", done: false },
-    { id: 3, title: "Đi Vĩnh Hy ngắm biển", emoji: "🏝️", done: false },
-    { id: 4, title: "Đi Đà Nẵng qua cầu Rồng", emoji: "🌉", done: false },
-    { id: 5, title: "Xem phim kinh dị cùng nhau", emoji: "👻", done: false },
-    { id: 6, title: "Đi dạo buổi tối hóng gió", emoji: "🌙", done: false },
-    { id: 7, title: "Đi workshop làm gốm", emoji: "🏺", done: false },
-    { id: 8, title: "Đi bắn cung giải trí", emoji: "🏹", done: false },
-    { id: 9, title: "Đi đua xe Go-kart", emoji: "🏎️", done: false },
-    { id: 10, title: "Đi bắn súng paintball/laser", emoji: "🔫", done: false },
-    { id: 11, title: "Đi dạo chợ hoa", emoji: "🌻", done: false },
-    { id: 12, title: "Quẩy ở Lễ hội âm nhạc", emoji: "🎵", done: false },
-    { id: 13, title: "Đi công viên dã ngoại", emoji: "🧺", done: false },
-    { id: 14, title: "Đi chụp hình Photobooth", emoji: "📸", done: false },
-    { id: 15, title: "Chơi nhà ma Escape Room", emoji: "🧟‍♂️", done: false },
-    { id: 16, title: "Đi trượt tuyết", emoji: "⛷️", done: false },
-    { id: 17, title: "Đi trượt patin", emoji: "🛼", done: false },
-    { id: 18, title: "Đi tô tượng thư giãn", emoji: "🎨", done: false },
-  ]);
+  // State hỗ trợ Thêm Ý Tưởng
+  const [newTitle, setNewTitle] = useState("");
+  const [newEmoji, setNewEmoji] = useState("❤️");
 
-  const toggleBucketItem = (id: number) => {
-    setBucketList(
-      bucketList.map((item) =>
-        item.id === id ? { ...item, done: !item.done } : item,
-      ),
-    );
-  };
+  // State hỗ trợ Thêm Món Ăn
+  const [newFood, setNewFood] = useState("");
 
   const [isSpinning, setIsSpinning] = useState(false);
   const [randomResult, setRandomResult] = useState(
     "Bấm nút để chọn đồ ăn đi Vy ơi! 🎯",
   );
 
-  const RANDOM_FOOD = [
-    "Ăn Bún bò Huế  🍜",
-    "Ăn Phở bò ngon ngon",
-    "Ăn Cơm tấm sườn bì chả 🍛",
-    "Ăn Cơm gà xối mỡ 🍗",
-    "Ăn Gà rán giòn rụm 🍗",
-    "Ăn Hủ tiếu Nam Vang 🍲",
-    "Đi ăn Đồ Hàn  🥘",
-    "Đi ăn Đồ Âu  🍝",
-    "Đi ăn Đồ Nhật  🍣",
-    "Đi ăn Đồ Thái 🍲",
-    "Đi ăn Há Cảo / Dimsum 🥟",
-    "Thách thức Mì cay 7 cấp độ 🌶️",
-    "Ăn Lẩu chay thanh tịnh 🌱",
-  ];
+  // Load dữ liệu từ database khi mở góc hẹn hò
+  useEffect(() => {
+    async function loadData() {
+      setIsLoading(true);
+      const data = await getGocHenHoItems();
+      setBucketList(data.bucketList || []);
+      setFoodList(data.foodList || []);
+      setIsLoading(false);
+    }
+    loadData();
+  }, []);
 
+  // Xóa món ăn khỏi DB vĩnh viễn
+  const handleDeleteFood = async (foodName: string) => {
+    setFoodList((prev) => prev.filter((f) => f !== foodName));
+    const res = await deleteItemAction("food", { foodName });
+    if (!res.success) alert("Lỗi khi xóa món ăn khỏi database!");
+  };
+
+  // Xóa hoạt động khỏi DB vĩnh viễn
+  const handleDeleteBucket = async (id: string) => {
+    setBucketList((prev) => prev.filter((item) => item.id !== id));
+    const res = await deleteItemAction("bucket", { bucketId: id });
+    if (!res.success) alert("Lỗi khi xóa hoạt động khỏi database!");
+  };
+
+  // Hàm click chọn thì Đánh dấu hoàn thành -> Đồng bộ DB
+  const toggleBucketItem = async (id: string) => {
+    const updatedList = bucketList.map((item) =>
+      item.id === id ? { ...item, done: true } : item,
+    );
+    setBucketList(updatedList);
+    await saveGocHenHoItems(updatedList, foodList);
+  };
+
+  // Hàm thêm ý tưởng hẹn hò mới
+  const handleAddBucketItem = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTitle.trim()) return;
+
+    const newItem: DateItem = {
+      id: Date.now().toString(),
+      text: newTitle.trim(),
+      icon: newEmoji,
+      done: false,
+    };
+
+    const updatedList = [newItem, ...bucketList];
+    setBucketList(updatedList);
+    setNewTitle("");
+    await saveGocHenHoItems(updatedList, foodList);
+  };
+
+  // Hàm thêm món ăn mới vào danh sách random
+  const handleAddFoodItem = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newFood.trim()) return;
+
+    const updatedFood = [newFood.trim(), ...foodList];
+    setFoodList(updatedFood);
+    setNewFood("");
+    await saveGocHenHoItems(bucketList, updatedFood);
+  };
+
+  // Hàm xử lý quay random chọn món ăn
   const handleSpin = () => {
-    if (isSpinning) return;
+    if (isSpinning || foodList.length === 0) return;
     setIsSpinning(true);
     let times = 0;
     const interval = setInterval(() => {
-      setRandomResult(
-        RANDOM_FOOD[Math.floor(Math.random() * RANDOM_FOOD.length)],
-      );
+      setRandomResult(foodList[Math.floor(Math.random() * foodList.length)]);
       times++;
       if (times > 25) {
         clearInterval(interval);
         setIsSpinning(false);
-        setRandomResult(
-          RANDOM_FOOD[Math.floor(Math.random() * RANDOM_FOOD.length)],
-        );
+        setRandomResult(foodList[Math.floor(Math.random() * foodList.length)]);
       }
     }, 80);
   };
+
+  // Lọc lấy những ý tưởng CHƯA HOÀN THÀNH để hiển thị lên list
+  const activeBucketItems = bucketList.filter((item) => !item.done);
 
   return (
     <div className="max-w-5xl w-full mx-auto bg-white p-8 md:p-12 rounded-[3rem] shadow-2xl text-center border-2 border-pink-50 relative overflow-hidden mt-10">
@@ -342,66 +378,185 @@ const GocHenHo = ({ onBack }: { onBack: () => void }) => {
         </button>
       </div>
 
-      {activeTab === "bucket" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500 h-[50vh] overflow-y-auto pr-2 text-left custom-scrollbar">
-          {bucketList.map((item) => (
-            <div
-              key={item.id}
-              onClick={() => toggleBucketItem(item.id)}
-              className={`flex items-center gap-4 p-4 rounded-3xl border-2 cursor-pointer transition-all hover:scale-105 active:scale-95 ${item.done ? "bg-green-50 border-green-200" : "bg-white border-pink-100 hover:border-pink-300 shadow-sm"}`}
-            >
-              <div
-                className={`w-12 h-12 shrink-0 rounded-full flex items-center justify-center text-2xl transition-all ${item.done ? "bg-green-400 text-white" : "bg-slate-100 text-slate-400"}`}
-              >
-                {item.done ? "✔️" : item.emoji}
-              </div>
-              <span
-                className={`text-base font-bold transition-all flex-1 ${item.done ? "text-green-600 line-through opacity-70" : "text-slate-700"}`}
-              >
-                {item.title}
-              </span>
-            </div>
-          ))}
-          <style jsx>{`
-            .custom-scrollbar::-webkit-scrollbar {
-              width: 8px;
-            }
-            .custom-scrollbar::-webkit-scrollbar-track {
-              background: #fff0f5;
-              border-radius: 10px;
-            }
-            .custom-scrollbar::-webkit-scrollbar-thumb {
-              background: #fbcfe8;
-              border-radius: 10px;
-            }
-            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-              background: #f472b6;
-            }
-          `}</style>
+      {isLoading ? (
+        <div className="text-xl font-bold text-pink-400 py-20 animate-pulse">
+          💝 Đang kết nối vũ trụ dữ liệu tình yêu...
         </div>
+      ) : (
+        <>
+          {activeTab === "bucket" && (
+            <div className="space-y-6 animate-in fade-in duration-500 text-left">
+              {/* Form thêm ý tưởng hẹn hò */}
+              <form
+                onSubmit={handleAddBucketItem}
+                className="bg-pink-50/50 p-4 rounded-3xl border border-pink-100 flex flex-col sm:flex-row gap-3 items-center"
+              >
+                <select
+                  value={newEmoji}
+                  onChange={(e) => setNewEmoji(e.target.value)}
+                  className="p-3 bg-white border border-pink-200 rounded-2xl text-2xl outline-none cursor-pointer"
+                >
+                  <option value="❤️">❤️</option>
+                  <option value="🌲">🌲</option>
+                  <option value="🌊">🌊</option>
+                  <option value="🏝️">🏝️</option>
+                  <option value="🌉">🌉</option>
+                  <option value="👻">👻</option>
+                  <option value="🌙">🌙</option>
+                  <option value="🏺">🏺</option>
+                  <option value="🏹">🏹</option>
+                  <option value="🍿">🍿</option>
+                  <option value="🍕">🍕</option>
+                  <option value="🌸">🌸</option>
+                </select>
+                <input
+                  type="text"
+                  placeholder="Vy muốn tụi mình cùng làm gì tiếp theo nè..."
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  className="flex-1 p-3 bg-white border border-pink-200 rounded-2xl text-base font-bold text-slate-700 outline-none placeholder:text-slate-300 focus:border-pink-400"
+                />
+                <button
+                  type="submit"
+                  className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-[#f43f5e] to-rose-400 text-white font-bold rounded-2xl flex items-center justify-center gap-2 shadow-md hover:scale-105 active:scale-95 transition-all"
+                >
+                  <Plus size={20} /> Thêm kế hoạch
+                </button>
+              </form>
+
+              {/* Grid hiển thị danh sách các ý tưởng chưa làm kèm NÚT XÓA */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
+                {activeBucketItems.length === 0 ? (
+                  <div className="col-span-full text-center py-10 text-slate-400 italic text-lg">
+                    🥳 Wow, tụi mình đã hoàn thành hết các mục tiêu rồi, hoặc
+                    chưa thêm kế hoạch mới á Vy!
+                  </div>
+                ) : (
+                  activeBucketItems.map((item) => (
+                    <div
+                      key={item.id}
+                      onClick={() => toggleBucketItem(item.id)}
+                      className="flex items-center justify-between p-4 rounded-3xl border-2 cursor-pointer bg-white border-pink-100 hover:border-pink-300 shadow-sm transition-all hover:scale-[1.02] duration-200 animate-in fade-in group"
+                    >
+                      <div className="flex items-center gap-4 flex-1 min-w-0">
+                        <div className="w-12 h-12 shrink-0 rounded-full flex items-center justify-center text-2xl bg-slate-100 text-slate-400">
+                          {item.icon}
+                        </div>
+                        <span className="text-base font-bold text-slate-700 truncate">
+                          {item.text}
+                        </span>
+                      </div>
+
+                      {/* Nút xóa hoạt động hẳn khỏi hệ thống */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation(); // Ngăn kích hoạt hàm click hoàn thành của thẻ cha
+                          handleDeleteBucket(item.id);
+                        }}
+                        className="text-gray-300 hover:text-red-500 font-bold p-2 transition-colors sm:opacity-0 group-hover:opacity-100"
+                        title="Xóa hẳn mục này"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+
+          {activeTab === "random" && (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-left animate-in fade-in duration-500">
+              {/* Bên trái: Form thêm món ăn và Danh sách món ăn có TÍNH NĂNG XÓA */}
+              <div className="bg-pink-50/50 p-6 rounded-[2.5rem] border border-pink-100 flex flex-col h-[60vh]">
+                <h3 className="font-black text-xl text-slate-700 mb-3 flex items-center gap-2">
+                  🍲 Kho Đồ Ăn Của Vy ({foodList.length})
+                </h3>
+                <form onSubmit={handleAddFoodItem} className="flex gap-2 mb-4">
+                  <input
+                    type="text"
+                    placeholder="Thêm món ăn Vy thèm..."
+                    value={newFood}
+                    onChange={(e) => setNewFood(e.target.value)}
+                    className="flex-1 p-3 bg-white border border-pink-200 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-pink-400"
+                  />
+                  <button
+                    type="submit"
+                    className="p-3 bg-[#f43f5e] text-white rounded-2xl font-bold shadow-md hover:scale-105 transition-all"
+                  >
+                    <Plus size={20} />
+                  </button>
+                </form>
+
+                <div className="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-1">
+                  {foodList.length === 0 ? (
+                    <p className="text-center text-slate-400 text-sm italic py-4">
+                      Kho trống trơn rồi á Vy!
+                    </p>
+                  ) : (
+                    foodList.map((food, idx) => (
+                      <div
+                        key={idx}
+                        className="bg-white px-4 py-3 rounded-2xl border border-pink-100 text-sm font-bold text-slate-600 shadow-sm flex justify-between items-center group"
+                      >
+                        <span className="truncate flex-1 pr-2">{food}</span>
+                        {/* Nút xóa món ăn */}
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteFood(food)}
+                          className="text-gray-300 hover:text-red-500 font-bold p-1 transition-colors sm:opacity-0 group-hover:opacity-100"
+                          title="Xóa món này"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              {/* Bên phải: Vòng xoay random */}
+              <div className="lg:col-span-2 flex flex-col items-center justify-center p-8 bg-gradient-to-br from-pink-50 to-rose-50 rounded-[3rem] border-4 border-dashed border-pink-200">
+                <div className="text-8xl md:text-9xl mb-8">
+                  {isSpinning ? "🌀" : "🤤"}
+                </div>
+                <div className="min-h-[120px] flex items-center justify-center px-8 py-6 bg-white rounded-3xl shadow-inner w-full md:w-3/4 mx-auto border-2 border-pink-100 mb-10 text-center">
+                  <h2
+                    className={`text-2xl md:text-3xl font-black transition-all duration-100 ${isSpinning ? "text-slate-400 blur-[1px] scale-105" : "text-[#f43f5e] scale-100"}`}
+                  >
+                    {randomResult}
+                  </h2>
+                </div>
+                <button
+                  onClick={handleSpin}
+                  disabled={isSpinning || foodList.length === 0}
+                  className={`px-12 py-6 bg-gradient-to-r from-[#f43f5e] to-rose-400 text-white rounded-full font-black text-xl md:text-2xl shadow-xl hover:shadow-2xl transition-all flex items-center gap-3 ${isSpinning || foodList.length === 0 ? "opacity-50 cursor-not-allowed scale-95" : "hover:scale-110 active:scale-95"}`}
+                >
+                  {isSpinning ? "Đang chọn món..." : "Vy nhấn chọn món iii! 🎲"}
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       )}
 
-      {activeTab === "random" && (
-        <div className="flex flex-col items-center justify-center p-10 md:p-16 bg-gradient-to-br from-pink-50 to-rose-50 rounded-[3rem] border-4 border-dashed border-pink-200 animate-in fade-in zoom-in-95 duration-500">
-          <div className="text-8xl md:text-9xl mb-8">
-            {isSpinning ? "🌀" : "🤤"}
-          </div>
-          <div className="min-h-[120px] flex items-center justify-center px-8 py-6 bg-white rounded-3xl shadow-inner w-full md:w-3/4 mx-auto border-2 border-pink-100 mb-10">
-            <h2
-              className={`text-3xl md:text-4xl font-black transition-all duration-100 ${isSpinning ? "text-slate-400 blur-[1px] scale-105" : "text-[#f43f5e] scale-100"}`}
-            >
-              {randomResult}
-            </h2>
-          </div>
-          <button
-            onClick={handleSpin}
-            disabled={isSpinning}
-            className={`px-12 py-6 bg-gradient-to-r from-[#f43f5e] to-rose-400 text-white rounded-full font-black text-2xl shadow-xl hover:shadow-2xl transition-all flex items-center gap-3 ${isSpinning ? "opacity-50 cursor-not-allowed scale-95" : "hover:scale-110 active:scale-95"}`}
-          >
-            {isSpinning ? "Đang chọn món..." : "Vy nhấn chọn món iii! 🎲"}
-          </button>
-        </div>
-      )}
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: #fff0f5;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #fbcfe8;
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #f472b6;
+        }
+      `}</style>
     </div>
   );
 };
@@ -576,6 +731,13 @@ const LETTERS_DATA = [
     content:
       "Tui thương Vy. Thương nhất trên đời. Câu này tui sẽ nói với Vy mỗi ngày, không bao giờ chán. E hèm câu này sẽ nói khi chúng ta đã quen nhau nha giờ ko danh ko phận nói quê lắm",
   },
+  {
+    id: 25,
+    label: "Lúc bé giận",
+    emoji: "😡",
+    content:
+      "Vy đang giận tui đúng không? Đừng giữ trong lòng nha, cứ xả hết vào tui nè. Tui sai rồi, tui xin lỗi cục dàng nhóooo 💖 Mở lòng nghe tui giải thích hoặc dắt đi ăn bù nha!",
+  },
 ];
 
 // --- DATA: TIMELINE ---
@@ -628,21 +790,12 @@ const LIBRARY_DATA = [
     date: "17/04/2026",
     title: "Tốt nghiệp của cục dàng",
     coverEmoji: "💐",
-    content: `Chào em nha, cục dàng dễ thương của anh.
-
-Anh thấy mình thật may mắn khi được cùng em đi qua một cột mốc rất đẹp trong cuộc đời – ngày em tốt nghiệp. Khoảnh khắc này không chỉ đáng nhớ với em, mà với anh cũng là một niềm tự hào rất lớn.
-
-Sau này, dù con đường phía trước có như thế nào, anh vẫn luôn tin rằng em sẽ tiếp tục tỏa sáng theo cách riêng của mình. Hãy cứ trải nghiệm thật nhiều, học hỏi thật nhiều em nhé. Con đường sau giảng đường chắc chắn sẽ có những chông gai và thử thách, nhưng em đừng lo. Nếu có lúc mệt mỏi hay áp lực quá, cứ dựa vào anh. Anh sẽ luôn ở đây, ở cạnh em, bảo bọc em, và đưa em về “nhà” – nơi có cơm ngon đợi cửa, trà sữa luôn đầy ly.
-
-Mệt thì cứ nhõng nhẽo với anh, buồn thì cứ than thở với anh, có chuyện gì không vui hay ai làm em buồn cũng méc cho anh nghe nha. Anh nói rồi mà, anh sẽ luôn là “đồng minh” đáng tin cậy nhất của cục dàng – chỉ sau ba mẹ thôi.
-
-Anh thương em rất nhiều, Thanh Vy à – cục dàng của anh. Moahhh.
-
-Từ Thiên Gia Bảo`,
+    content: `Chào em nha, cục dàng dễ thương của anh.\n\nAnh thấy mình thật may mắn khi được cùng em đi qua một cột mốc rất đẹp trong cuộc đời – ngày em tốt nghiệp. Khoảnh khắc này không chỉ đáng nhớ với em, mà với anh cũng là một niềm tự hào rất lớn.\n\nSau này, dù con đường phía trước có như thế nào, anh vẫn luôn tin rằng em sẽ tiếp tục tỏa sáng theo cách riêng của mình. Hãy cứ trải nghiệm thật nhiều, học hỏi thật nhiều em nhé. Con đường sau giảng đường chắc chắn sẽ có những chông gai và thử thách, nhưng em đừng lo. Nếu có lúc mệt mỏi hay áp lực quá, cứ dựa vào anh. Anh sẽ luôn ở đây, ở cạnh em, bảo bọc em, và đưa em về “nhà” – nơi có cơm ngon đợi cửa, trà sữa luôn đầy ly.\n\nMệt thì cứ nhõng nhẽo với anh, buồn thì cứ than thở với anh, có chuyện gì không vui hay ai làm em buồn cũng méc cho anh nghe nha. Anh nói rồi mà, anh sẽ luôn là “đồng minh” đáng tin cậy nhất của cục dàng – chỉ sau ba mẹ thôi.\n\nAnh thương em rất nhiều, Thanh Vy à – cục dàng của anh. Moahhh.\n\nTừ Thiên Gia Bảo`,
     color: "from-rose-400 to-red-400",
   },
 ];
 
+// --- MAIN COMPONENT TRANG CHỦ ---
 export default function Home() {
   const [isLocked, setIsLocked] = useState(true);
   const [password, setPassword] = useState("");
@@ -671,11 +824,12 @@ export default function Home() {
     }
   };
 
+  // MÀN HÌNH KHÓA BẢO MẬT
   if (isLocked) {
     return (
       <main className="min-h-screen bg-[#fff0f5] flex items-center justify-center p-6 md:p-12">
         <div
-          className={`bg-white p-12 md:p-16 rounded-[3.5rem] shadow-2xl max-w-xl w-full text-center transition-all ${error ? "animate-shake border-4 border-red-300" : "border-4 border-white"}`}
+          className={`bg-white p-12 md:p-16 rounded-[3.5rem] shadow-2xl max-w-xl w-full text-center transition-all duration-300 ${error ? "animate-bounce border-4 border-red-300" : "border-4 border-white"}`}
         >
           <div className="w-28 h-28 bg-pink-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl">
             <Lock className="text-white" size={48} />
@@ -690,7 +844,7 @@ export default function Home() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-6 bg-pink-50/50 rounded-3xl border-2 border-pink-200 focus:border-pink-500 outline-none text-center text-4xl font-black text-pink-600 mb-8 tracking-[1em]"
+            className="w-full p-6 bg-pink-50/50 rounded-3xl border-2 border-pink-200 focus:border-pink-500 outline-none text-center text-4xl font-black text-pink-600 mb-8 tracking-[0.5em]"
             onKeyDown={(e) => e.key === "Enter" && handleUnlock()}
           />
           <button
@@ -700,309 +854,219 @@ export default function Home() {
             Vào thôiii! <Unlock size={28} />
           </button>
           {error && (
-            <p className="text-red-500 text-lg mt-6 font-bold">
-              Mật mã sai rồi nha Vy ơi! 😝
+            <p className="text-red-500 text-lg mt-6 font-bold animate-pulse">
+              Mật mã chưa đúng rồi Vy ơi... 😢
             </p>
           )}
         </div>
-        <style jsx global>{`
-          @keyframes shake {
-            0%,
-            100% {
-              transform: translateX(0);
-            }
-            25% {
-              transform: translateX(-15px);
-            }
-            75% {
-              transform: translateX(15px);
-            }
-          }
-          .animate-shake {
-            animation: shake 0.3s ease-in-out 0s 2;
-          }
-        `}</style>
       </main>
     );
   }
 
-  if (view === "home") {
-    return (
-      <main className="min-h-screen bg-[#fff0f5] flex items-center justify-center p-6 animate-in fade-in zoom-in duration-700">
-        <div className="bg-white p-10 md:p-16 rounded-[4rem] shadow-2xl max-w-2xl w-full text-center border-2 border-pink-50">
-          <h1 className="text-5xl md:text-6xl font-black text-[#f43f5e] mb-4 flex items-center justify-center gap-4">
-            Góc nhỏ của Vy{" "}
-            <Heart className="fill-[#f43f5e] text-[#f43f5e]" size={48} />
-          </h1>
-          <p className="text-slate-500 text-xl md:text-2xl italic mb-10">
-            "Chào mừng Vy đã vào nhaa."
-          </p>
-          <div className="flex flex-col gap-6">
+  // KHÔNG GIAN ĐÃ MỞ KHÓA
+  return (
+    <main className="min-h-screen bg-[#fff5f7] p-4 md:p-12 text-slate-800">
+      {/* 1. MÀN HÌNH CHÍNH (DASHBOARD) */}
+      {view === "home" && (
+        <div className="max-w-4xl mx-auto space-y-10 animate-in fade-in duration-500">
+          <div className="text-center space-y-3">
+            <h1 className="text-4xl md:text-6xl font-black text-[#f43f5e] tracking-tight flex items-center justify-center gap-3">
+              Chào Cục dàng nhaa!{" "}
+              <Heart
+                className="fill-current animate-ping text-rose-500"
+                size={36}
+              />
+            </h1>
+            <p className="text-slate-500 text-lg md:text-2xl italic font-medium">
+              Nơi chứa đựng những điều ngọt ngào nhất aiu dành riêng cho bé.
+            </p>
+          </div>
+
+          {/* Grid các tính năng lớn */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
             <MenuBtn
-              icon={<Calendar size={32} />}
-              label="Dòng Thời Gian"
+              icon={<Clock size={28} />}
+              label="Hành trình thời gian"
               onClick={() => setView("timeline")}
             />
             <MenuBtn
-              icon={<Sparkles size={32} />}
-              label="Thư Viện Cảm Xúc"
-              onClick={() => setView("library")}
-            />
-            <MenuBtn
-              icon={<Mail size={32} />}
-              label="Những Bức Thư"
+              icon={<Mail size={28} />}
+              label="24 Bức thư cảm xúc"
               onClick={() => setView("letters")}
             />
             <MenuBtn
-              icon={<Coffee size={32} />}
-              label="Ý Tưởng Hẹn Hò 💡"
+              icon={<Sparkles size={28} />}
+              label="Thư viện kỷ niệm"
+              onClick={() => setView("library")}
+            />
+            <MenuBtn
+              icon={<Coffee size={28} />}
+              label="Góc hẹn hò ạ"
               onClick={() => setView("dating")}
             />
           </div>
+
+          {/* Trạm âm nhạc phía dưới Dashboard */}
           <TramPhatSong />
         </div>
-      </main>
-    );
-  }
+      )}
 
-  if (view === "library") {
-    return (
-      <main className="min-h-screen bg-[#fff0f5] p-6 md:p-12 flex flex-col items-center justify-center">
-        <div className="max-w-6xl w-full mx-auto">
-          {!selectedLibraryItem && (
-            <button
-              onClick={() => setView("home")}
-              className="mb-10 text-[#f43f5e] text-2xl font-black flex items-center gap-3 hover:scale-105 transition-transform"
-            >
-              <ArrowLeft size={32} /> Quay về
-            </button>
-          )}
-          {!selectedLibraryItem ? (
-            <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
-              <div className="text-center mb-16">
-                <h2 className="text-5xl md:text-6xl font-black text-[#f43f5e] mb-4 flex items-center justify-center gap-4">
-                  <Sparkles size={48} className="text-pink-400" /> Thư Viện Cảm
-                  Xúc
-                </h2>
-                <p className="text-2xl text-slate-500 italic">
-                  "Gửi em vào những ngày đặc biệt nhất..."
-                </p>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {LIBRARY_DATA.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => setSelectedLibraryItem(item)}
-                    className={`group relative overflow-hidden rounded-[3rem] shadow-lg hover:shadow-2xl transition-all text-left border-4 border-white aspect-[2/1] md:aspect-auto md:h-64 flex flex-col justify-between p-10 bg-gradient-to-br ${item.color}`}
-                  >
-                    <div className="absolute top-0 right-0 -mt-8 -mr-8 text-9xl opacity-20 group-hover:scale-110 transition-transform duration-500">
-                      {item.coverEmoji}
-                    </div>
-                    <div>
-                      <span className="inline-block px-4 py-2 bg-white/30 backdrop-blur-md rounded-full text-white font-black text-sm mb-4 shadow-sm">
-                        {item.date}
-                      </span>
-                      <h3 className="text-3xl font-black text-white leading-tight drop-shadow-md w-3/4">
-                        {item.title}
-                      </h3>
-                    </div>
-                    <div className="text-white/90 font-bold flex items-center gap-2 group-hover:translate-x-2 transition-transform">
-                      Mở bưu thiếp <ChevronRight size={20} />
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className="max-w-3xl mx-auto bg-white rounded-[3.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-500 relative">
-              <button
-                onClick={() => setSelectedLibraryItem(null)}
-                className="absolute top-8 right-8 z-10 bg-white/20 hover:bg-white/40 text-white p-3 rounded-full backdrop-blur-md transition-all"
-              >
-                <ArrowLeft size={28} />
-              </button>
-              <div
-                className={`bg-gradient-to-br ${selectedLibraryItem.color} p-16 md:p-20 text-center text-white relative`}
-              >
-                <span className="text-8xl block mb-6 drop-shadow-xl">
-                  {selectedLibraryItem.coverEmoji}
-                </span>
-                <p className="text-xl font-bold opacity-80 mb-2 tracking-widest">
-                  {selectedLibraryItem.date}
-                </p>
-                <h3 className="text-4xl md:text-5xl font-black">
-                  {selectedLibraryItem.title}
-                </h3>
-              </div>
-              <div className="p-12 md:p-16 text-slate-700 leading-relaxed text-2xl italic font-medium relative">
-                <Typewriter text={selectedLibraryItem.content} />
-                <div className="mt-16 pt-10 border-t-2 border-pink-50 text-right">
-                  <p className="font-black text-[#f43f5e] text-3xl mt-2 tracking-tight">
-                    Ký tên
-                  </p>
-                  <p className="font-bold text-slate-400 text-xl mt-1">
-                    Từ Thiên Gia Bảo💌
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </main>
-    );
-  }
-
-  if (view === "timeline") {
-    return (
-      <main className="min-h-screen bg-[#fff0f5] p-6 md:p-16">
-        <div className="max-w-5xl mx-auto">
+      {/* 2. CHỨC NĂNG TIMELINE */}
+      {view === "timeline" && (
+        <div className="max-w-3xl mx-auto bg-white p-8 md:p-12 rounded-[3rem] shadow-xl relative animate-in fade-in duration-500">
           <button
             onClick={() => setView("home")}
-            className="mb-12 text-[#f43f5e] text-2xl font-black flex items-center gap-3 hover:scale-105 transition-transform"
+            className="absolute top-8 left-8 text-[#f43f5e] hover:bg-pink-50 p-2 rounded-full transition-all"
           >
-            <ArrowLeft size={32} /> Quay về
+            <ArrowLeft size={24} />
           </button>
-          <div className="space-y-20 relative">
-            <div className="absolute left-[27px] top-4 bottom-4 w-2 bg-pink-200 rounded-full"></div>
-            {TIMELINE_DATA.map((yearBlock, idx) => (
-              <div key={idx} className="relative pl-24">
+          <h2 className="text-3xl md:text-4xl font-black text-[#f43f5e] text-center mb-10 mt-6">
+            ⌛ Hành trình thời gian
+          </h2>
+          <div className="space-y-8 relative before:absolute before:inset-0 before:left-4 before:w-1 before:bg-pink-100">
+            {TIMELINE_DATA.map((t, i) => (
+              <div key={i} className="relative pl-10">
                 <div
-                  className={`absolute left-0 w-16 h-16 rounded-full flex items-center justify-center border-4 border-white z-10 shadow-xl ${yearBlock.status === "unlocked" ? "bg-[#f43f5e]" : "bg-slate-300"}`}
-                >
-                  {yearBlock.status === "unlocked" ? (
-                    <Star size={32} className="text-white fill-white" />
-                  ) : (
-                    <Clock size={32} className="text-white" />
-                  )}
-                </div>
-                <h3
-                  className={`text-5xl font-black mb-10 ${yearBlock.status === "unlocked" ? "text-[#f43f5e]" : "text-slate-400"}`}
-                >
-                  Năm {yearBlock.year} {yearBlock.status === "locked" && "🔒"}
+                  className={`absolute left-2 top-1 w-5 h-5 rounded-full border-4 border-white shadow ${t.status === "unlocked" ? "bg-pink-500" : "bg-slate-300"}`}
+                />
+                <h3 className="text-2xl font-black text-slate-700">
+                  {t.year} {t.status === "locked" && "🔒"}
                 </h3>
-                {yearBlock.status === "unlocked" ? (
-                  <div className="grid gap-10">
-                    {yearBlock.events.map((event, eIdx) => (
-                      <div
-                        key={eIdx}
-                        className="bg-white p-12 rounded-[3.5rem] shadow-lg hover:shadow-2xl transition-all border border-pink-50"
-                      >
-                        <span className="bg-[#fff0f5] text-[#f43f5e] px-6 py-3 rounded-full text-lg font-black">
-                          {event.date}
-                        </span>
-                        <h4 className="text-3xl font-bold text-slate-700 mt-6">
-                          {event.title}
-                        </h4>
-                        <p className="text-slate-500 text-xl mt-4 leading-relaxed">
-                          {event.desc}
-                        </p>
-                        <div className="mt-10 aspect-video bg-[#fff0f5] rounded-[2.5rem] flex items-center justify-center border-4 border-dashed border-pink-200">
-                          <span className="text-pink-400 font-bold text-xl italic">
-                            {event.img}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                {t.events.map((ev, idx) => (
+                  <div
+                    key={idx}
+                    className="bg-pink-50/50 p-4 rounded-2xl mt-2 border border-pink-100"
+                  >
+                    <span className="text-xs font-bold bg-pink-200 text-pink-700 px-2 py-0.5 rounded-full">
+                      {ev.date}
+                    </span>
+                    <h4 className="font-bold text-lg text-slate-800 mt-1">
+                      {ev.title}
+                    </h4>
+                    <p className="text-slate-600 text-sm mt-1">{ev.desc}</p>
                   </div>
-                ) : (
-                  <div className="bg-white/50 border-4 border-dashed border-slate-200 p-16 rounded-[3.5rem] text-center">
-                    <p className="text-slate-400 text-2xl italic">
-                      "Đang chờ tụi mình cùng viết tiếp..."
-                    </p>
-                  </div>
-                )}
+                ))}
               </div>
             ))}
           </div>
         </div>
-      </main>
-    );
-  }
+      )}
 
-  if (view === "letters") {
-    return (
-      <main className="min-h-screen bg-[#fff0f5] p-6 md:p-12">
-        <div className="max-w-[90rem] mx-auto">
-          {!selectedLetter && (
-            <button
-              onClick={() => setView("home")}
-              className="mb-10 text-[#f43f5e] text-2xl font-black flex items-center gap-3 hover:scale-105 transition-transform"
-            >
-              <ArrowLeft size={32} /> Quay về trang chủ
-            </button>
-          )}
-          {!selectedLetter ? (
-            <div className="animate-in fade-in slide-in-from-bottom-8 duration-700">
-              <div className="text-center mb-16">
-                <h2 className="text-6xl md:text-7xl font-black text-[#f43f5e] mb-4">
-                  Dành Cho Vy
-                </h2>
-                <p className="text-2xl text-slate-500 italic">
-                  "Mở ra mỗi khi Vy thấy cần một chút vỗ về nha..."
-                </p>
-              </div>
-              <div className="flex items-center gap-3 mb-8 text-[#f43f5e] text-2xl font-bold">
-                <Mail size={32} /> Hãy chọn một bức thư:
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-                {LETTERS_DATA.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => setSelectedLetter(item)}
-                    className="group p-10 bg-white rounded-[2.5rem] shadow-sm hover:shadow-2xl transition-all text-left flex items-center gap-6 border border-pink-50"
-                  >
-                    <span className="text-6xl group-hover:scale-125 group-hover:rotate-12 transition-all duration-300 drop-shadow-sm">
-                      {item.emoji}
-                    </span>
-                    <span className="font-bold text-xl md:text-2xl text-slate-700 leading-snug">
-                      {item.label}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className="max-w-4xl mx-auto bg-white rounded-[4rem] shadow-2xl overflow-hidden border border-pink-50 animate-in zoom-in-95 duration-500 mt-10">
-              <div className="bg-gradient-to-br from-[#f43f5e] to-rose-400 p-20 text-center text-white relative">
-                <button
-                  onClick={() => setSelectedLetter(null)}
-                  className="absolute top-8 left-8 text-white/80 hover:text-white bg-white/20 p-4 rounded-full backdrop-blur-sm transition-all"
-                >
-                  <ArrowLeft size={32} />
-                </button>
-                <span className="text-9xl block mb-8 drop-shadow-2xl">
-                  {selectedLetter.emoji}
+      {/* 3. CHỨC NĂNG 24 BỨC THƯ */}
+      {view === "letters" && !selectedLetter && (
+        <div className="max-w-5xl mx-auto bg-white p-8 md:p-12 rounded-[3rem] shadow-xl relative animate-in fade-in duration-500 text-center">
+          <button
+            onClick={() => setView("home")}
+            className="absolute top-8 left-8 text-[#f43f5e] hover:bg-pink-50 p-2 rounded-full transition-all"
+          >
+            <ArrowLeft size={24} />
+          </button>
+          <h2 className="text-3xl md:text-4xl font-black text-[#f43f5e] mb-2 mt-6">
+            ✉️ Thư cảm xúc
+          </h2>
+          <p className="text-slate-400 italic mb-8">
+            Hãy chọn một bức thư đúng với tâm trạng hiện tại của Vy nhé...
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+            {LETTERS_DATA.map((letItem) => (
+              <div
+                key={letItem.id}
+                onClick={() => setSelectedLetter(letItem)}
+                className="p-5 bg-pink-50/50 rounded-2xl border border-pink-100 hover:border-pink-400 shadow-sm cursor-pointer hover:scale-105 transition-all text-left flex items-center gap-3"
+              >
+                <span className="text-3xl">{letItem.emoji}</span>
+                <span className="font-bold text-slate-700 text-sm md:text-base">
+                  {letItem.label}
                 </span>
-                <h3 className="text-4xl md:text-5xl font-black leading-tight">
-                  {selectedLetter.label}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* CHI TIẾT MỘT BỨC THƯ ĐANG ĐỌC */}
+      {view === "letters" && selectedLetter && (
+        <div className="max-w-2xl mx-auto bg-white p-8 md:p-12 rounded-[3rem] shadow-xl relative animate-in zoom-in-95 duration-300">
+          <button
+            onClick={() => setSelectedLetter(null)}
+            className="absolute top-8 left-8 text-[#f43f5e] hover:bg-pink-50 p-2 rounded-full transition-all"
+          >
+            <ArrowLeft size={24} />
+          </button>
+          <div className="text-center mt-6">
+            <span className="text-6xl">{selectedLetter.emoji}</span>
+            <h3 className="text-2xl font-black text-slate-800 mt-4 mb-6">
+              {selectedLetter.label}
+            </h3>
+            <div className="text-left bg-slate-50 p-6 rounded-3xl border border-slate-100 text-slate-600 text-lg font-medium">
+              <Typewriter text={selectedLetter.content} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 4. CHỨC NĂNG THƯ VIỆN KỶ NIỆM */}
+      {view === "library" && !selectedLibraryItem && (
+        <div className="max-w-5xl mx-auto bg-white p-8 md:p-12 rounded-[3rem] shadow-xl relative animate-in fade-in duration-500 text-center">
+          <button
+            onClick={() => setView("home")}
+            className="absolute top-8 left-8 text-[#f43f5e] hover:bg-pink-50 p-2 rounded-full transition-all"
+          >
+            <ArrowLeft size={24} />
+          </button>
+          <h2 className="text-3xl md:text-4xl font-black text-[#f43f5e] mb-2 mt-6">
+            💐 Thư viện kỷ niệm
+          </h2>
+          <p className="text-slate-400 italic mb-8">
+            Những lá thư dài tui viết cho Vy vào những ngày đặc biệt...
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {LIBRARY_DATA.map((libItem) => (
+              <div
+                key={libItem.id}
+                onClick={() => setSelectedLibraryItem(libItem)}
+                className={`p-6 rounded-3xl bg-gradient-to-br ${libItem.color} text-white shadow-md cursor-pointer hover:scale-[1.03] transition-all text-left flex flex-col justify-between h-44`}
+              >
+                <div className="flex justify-between items-start">
+                  <span className="text-4xl">{libItem.coverEmoji}</span>
+                  <span className="text-xs font-bold opacity-80 bg-white/20 px-2 py-1 rounded-full">
+                    {libItem.date}
+                  </span>
+                </div>
+                <h3 className="font-black text-xl tracking-tight">
+                  {libItem.title}
                 </h3>
               </div>
-              <div className="p-16 md:p-24 text-slate-700 leading-relaxed text-3xl italic font-medium">
-                <Typewriter text={selectedLetter.content} />
-                <div className="mt-20 pt-16 border-t-2 border-pink-50 text-right">
-                  <p className="font-black text-[#f43f5e] text-3xl mt-2 tracking-tight">
-                    Ký tên
-                  </p>
-                  <p className="font-bold text-slate-400 text-xl mt-1">
-                    Từ Thiên Gia Bảo💌
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
+            ))}
+          </div>
         </div>
-      </main>
-    );
-  }
+      )}
 
-  // --- TRANG: GÓC HẸN HÒ ---
-  if (view === "dating") {
-    return (
-      <main className="min-h-screen bg-[#fff0f5] p-6 md:p-12 flex flex-col items-center justify-center animate-in zoom-in duration-500">
-        <GocHenHo onBack={() => setView("home")} />
-      </main>
-    );
-  }
+      {/* CHI TIẾT MỘT KỶ NIỆM ĐANG ĐỌC */}
+      {view === "library" && selectedLibraryItem && (
+        <div className="max-w-3xl mx-auto bg-white p-8 md:p-12 rounded-[3rem] shadow-xl relative animate-in zoom-in-95 duration-300">
+          <button
+            onClick={() => setSelectedLibraryItem(null)}
+            className="absolute top-8 left-8 text-[#f43f5e] hover:bg-pink-50 p-2 rounded-full transition-all"
+          >
+            <ArrowLeft size={24} />
+          </button>
+          <div className="mt-8">
+            <span className="text-xs font-bold bg-pink-100 text-pink-700 px-3 py-1 rounded-full">
+              {selectedLibraryItem.date}
+            </span>
+            <h3 className="text-3xl font-black text-slate-800 mt-3 mb-6 flex items-center gap-2">
+              {selectedLibraryItem.coverEmoji} {selectedLibraryItem.title}
+            </h3>
+            <div className="bg-pink-50/30 p-6 md:p-8 rounded-3xl border border-pink-100 text-slate-700 text-base md:text-lg font-medium whitespace-pre-wrap leading-relaxed shadow-inner max-h-[60vh] overflow-y-auto custom-scrollbar">
+              {selectedLibraryItem.content}
+            </div>
+          </div>
+        </div>
+      )}
 
-  return null;
+      {/* 5. GÓC HẸN HÒ (GỌI ĐÚNG ĐẾN COMPONENT ĐÃ FIX) */}
+      {view === "dating" && <GocHenHo onBack={() => setView("home")} />}
+    </main>
+  );
 }
