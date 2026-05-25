@@ -75,17 +75,17 @@ const MenuBtn = ({
 // --- COMPONENT: TRẠM PHÁT SÓNG TÌNH YÊU ---
 const TramPhatSong = () => {
   const PLAYLIST = [
-    { src: "/audio/bai-1.mp3", message: "Ưu tiên của tui Nguyễn Thanh Vy" },
-    { src: "/audio/bai-2.mp3", message: "Bài này tui thấy dễ thương🥰" },
+    { src: "/audio/bai-1.mp3", message: "Ưu tiên của aiu Nguyễn Thanh bé" },
+    { src: "/audio/bai-2.mp3", message: "Bài này aiu thấy dễ thương🥰" },
     {
       src: "/audio/bai-3.mp3",
-      message: "Bài này tui nghĩ Vy sẽ thích đó, nghe đi nha! 🎵",
+      message: "Bài này aiu nghĩ bé sẽ thích đó, nghe đi nha! 🎵",
     },
     {
       src: "/audio/bai-4.mp3",
       message: "Nghe quen hông 5 điều phải nhớ đóaaaa 🎶",
     },
-    { src: "/audio/bai-5.mp3", message: "Bỏ vào tại tui thích lyrics" },
+    { src: "/audio/bai-5.mp3", message: "Bỏ vào tại aiu thích lyrics" },
     {
       src: "/audio/bai-6.mp3",
       message: "tiếp theo là một bài về tình yêu đáng eo khác ",
@@ -93,7 +93,7 @@ const TramPhatSong = () => {
     {
       src: "/audio/bai-7.mp3",
       message:
-        "Vy ghi chú bài này xong tui mê quớ thêm vào lun, Nghe xong bài này Vy nhớ cười một cái nha, Vy cười dethuong lắm!💖",
+        "bé ghi chú bài này xong aiu mê quớ thêm vào lun, Nghe xong bài này bé nhớ cười một cái nha, bé cười dethuong lắm!💖",
     },
     { src: "/audio/bai-8.mp3", message: "Vẫn là từ ghi chú" },
     { src: "/audio/bai-9.mp3", message: "Bài này nói j nữa guột lun" },
@@ -259,7 +259,7 @@ const GocHenHo = ({ onBack }: { onBack: () => void }) => {
 
   const [isSpinning, setIsSpinning] = useState(false);
   const [randomResult, setRandomResult] = useState(
-    "Bấm nút để chọn đồ ăn đi Vy ơi! 🎯",
+    "Bấm nút để chọn đồ ăn đi bé ơi! 🎯",
   );
 
   // Load dữ liệu từ database khi mở góc hẹn hò
@@ -359,7 +359,7 @@ const GocHenHo = ({ onBack }: { onBack: () => void }) => {
         <Lightbulb className="text-yellow-400 fill-yellow-400" size={40} />
       </h1>
       <p className="text-slate-500 text-lg md:text-xl italic mb-8">
-        "Lưu lại những nơi và những việc tui muốn tụi mình cùng đi và cùng
+        "Lưu lại những nơi và những việc aiu muốn tụi mình cùng đi và cùng
         làm,..."
       </p>
 
@@ -411,7 +411,7 @@ const GocHenHo = ({ onBack }: { onBack: () => void }) => {
                 </select>
                 <input
                   type="text"
-                  placeholder="Vy muốn tụi mình cùng làm gì tiếp theo nè..."
+                  placeholder="bé muốn tụi mình cùng làm gì tiếp theo nè..."
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   className="flex-1 p-3 bg-white border border-pink-200 rounded-2xl text-base font-bold text-slate-700 outline-none placeholder:text-slate-300 focus:border-pink-400"
@@ -429,7 +429,7 @@ const GocHenHo = ({ onBack }: { onBack: () => void }) => {
                 {activeBucketItems.length === 0 ? (
                   <div className="col-span-full text-center py-10 text-slate-400 italic text-lg">
                     🥳 Wow, tụi mình đã hoàn thành hết các mục tiêu rồi, hoặc
-                    chưa thêm kế hoạch mới á Vy!
+                    chưa thêm kế hoạch mới á bé!
                   </div>
                 ) : (
                   activeBucketItems.map((item) => (
@@ -471,12 +471,12 @@ const GocHenHo = ({ onBack }: { onBack: () => void }) => {
               {/* Bên trái: Form thêm món ăn và Danh sách món ăn có TÍNH NĂNG XÓA */}
               <div className="bg-pink-50/50 p-6 rounded-[2.5rem] border border-pink-100 flex flex-col h-[60vh]">
                 <h3 className="font-black text-xl text-slate-700 mb-3 flex items-center gap-2">
-                  🍲 Kho Đồ Ăn Của Vy ({foodList.length})
+                  🍲 Kho Đồ Ăn Của bé ({foodList.length})
                 </h3>
                 <form onSubmit={handleAddFoodItem} className="flex gap-2 mb-4">
                   <input
                     type="text"
-                    placeholder="Thêm món ăn Vy thèm..."
+                    placeholder="Thêm món ăn bé thèm..."
                     value={newFood}
                     onChange={(e) => setNewFood(e.target.value)}
                     className="flex-1 p-3 bg-white border border-pink-200 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:border-pink-400"
@@ -492,7 +492,7 @@ const GocHenHo = ({ onBack }: { onBack: () => void }) => {
                 <div className="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-1">
                   {foodList.length === 0 ? (
                     <p className="text-center text-slate-400 text-sm italic py-4">
-                      Kho trống trơn rồi á Vy!
+                      Kho trống trơn rồi á bé!
                     </p>
                   ) : (
                     foodList.map((food, idx) => (
@@ -533,7 +533,7 @@ const GocHenHo = ({ onBack }: { onBack: () => void }) => {
                   disabled={isSpinning || foodList.length === 0}
                   className={`px-12 py-6 bg-gradient-to-r from-[#f43f5e] to-rose-400 text-white rounded-full font-black text-xl md:text-2xl shadow-xl hover:shadow-2xl transition-all flex items-center gap-3 ${isSpinning || foodList.length === 0 ? "opacity-50 cursor-not-allowed scale-95" : "hover:scale-110 active:scale-95"}`}
                 >
-                  {isSpinning ? "Đang chọn món..." : "Vy nhấn chọn món iii! 🎲"}
+                  {isSpinning ? "Đang chọn món..." : "bé nhấn chọn món iii! 🎲"}
                 </button>
               </div>
             </div>
@@ -568,175 +568,175 @@ const LETTERS_DATA = [
     label: "Lúc cảm thấy bản thân không đủ giỏi",
     emoji: "🌱",
     content:
-      "Vy à, tui biết có những khi Vy nhìn quanh và thấy mình kém cỏi so với mọi người. Vy tự trách bản thân rằng mình chưa đủ giỏi, chưa đủ hoàn hảo. Nhưng Vy ơi, không ai trên đời này sinh ra đã là hoàn hảo cả. Mỗi người đều có con đường riêng, nhịp đi riêng. Và Vy cũng vậy, từng bước Vy đi, từng nỗ lực Vy bỏ ra đều xứng đáng được trân trọng. Vy chưa giỏi hôm nay, không có nghĩa là Vy sẽ mãi mãi như thế. Thời gian sẽ chứng minh rằng Vy mạnh mẽ và tài giỏi hơn Vy nghĩ nhiều.",
+      "bé à, aiu biết có những khi bé nhìn quanh và thấy mình kém cỏi so với mọi người. bé tự trách bản thân rằng mình chưa đủ giỏi, chưa đủ hoàn hảo. Nhưng bé ơi, không ai trên đời này sinh ra đã là hoàn hảo cả. Mỗi người đều có con đường riêng, nhịp đi riêng. Và bé cũng vậy, từng bước bé đi, từng nỗ lực bé bỏ ra đều xứng đáng được trân trọng. bé chưa giỏi hôm nay, không có nghĩa là bé sẽ mãi mãi như thế. Thời gian sẽ chứng minh rằng bé mạnh mẽ và tài giỏi hơn bé nghĩ nhiều.",
   },
   {
     id: 2,
     label: "Lúc cảm thấy không đủ may mắn",
     emoji: "🍀",
     content:
-      "Có những lúc Vy nghĩ rằng mình thật không may mắn... Nhưng Vy ơi, tui tin rằng may mắn không chỉ đến từ sự tình cờ, mà còn từ chính sự nỗ lực và kiên trì của mình. Nếu Vy đã cố gắng rất nhiều rồi, thì chỉ cần đi tiếp, một ngày nào đó Vy sẽ nhận được phần thưởng xứng đáng.",
+      "Có những lúc bé nghĩ rằng mình thật không may mắn... Nhưng bé ơi, aiu tin rằng may mắn không chỉ đến từ sự tình cờ, mà còn từ chính sự nỗ lực và kiên trì của mình. Nếu bé đã cố gắng rất nhiều rồi, thì chỉ cần đi tiếp, một ngày nào đó bé sẽ nhận được phần thưởng xứng đáng.",
   },
   {
     id: 3,
     label: "Lúc cảm thấy mệt mỏi",
     emoji: "😴",
     content:
-      "Mỗi khi Vy kiệt sức như lúc mở bức thư này lên, hi vọng lúc đó tui có thể ở cạnh Vy nếu ko thể là một người bạn trai thì với một tư cách một người bạn cũng được. Tui muốn nói rằng Vy đã làm rất tốt rồi.",
+      "Mỗi khi bé kiệt sức như lúc mở bức thư này lên, hi vọng lúc đó aiu có thể ở cạnh bé nếu ko thể là một người bạn trai thì với một tư cách một người bạn cũng được. aiu muốn nói rằng bé đã làm rất tốt rồi.",
   },
   {
     id: 4,
     label: "Lúc cảm thấy không được tin tưởng",
     emoji: "🤝",
     content:
-      "Việc ai đó không tin Vy không hề làm giảm giá trị của Vy. Vy vẫn là Vy – chân thành, tử tế, đáng tin cậy. Đừng để tâm tới những con người đó, Vy chỉ cần tin những người thực sự thương Vy là đủ.",
+      "Việc ai đó không tin bé không hề làm giảm giá trị của bé. bé vẫn là bé – chân thành, tử tế, đáng tin cậy. Đừng để tâm tới những con người đó, bé chỉ cần tin những người thực sự thương bé là đủ.",
   },
   {
     id: 5,
     label: "Lúc hoài nghi về chính mình",
     emoji: "🪞",
     content:
-      "Đừng để một chút sự cố nhỏ mà hoài nghi bản thân mình nhé. Vy đã vượt qua rất nhiều thứ rồi mà. Vy nên tin vào bản thân nhiều hơn đi Vy siêu hơn Vy nghĩ nhiều đóaaa",
+      "Đừng để một chút sự cố nhỏ mà hoài nghi bản thân mình nhé. bé đã vượt qua rất nhiều thứ rồi mà. bé nên tin vào bản thân nhiều hơn đi bé siêu hơn bé nghĩ nhiều đóaaa",
   },
   {
     id: 6,
     label: "Lúc thức khuya",
     emoji: "🌙",
     content:
-      "Ây daaa Vy ơi, dù hôm nay có chuyện gì xảy ra thì Vy vẫn phải thương bản thân mình bằng cách ngủ sớm và ngủ thật ngon vào nhennn. Thức khuya tui xót lắm đó!",
+      "Ây daaa bé ơi, dù hôm nay có chuyện gì xảy ra thì bé vẫn phải thương bản thân mình bằng cách ngủ sớm và ngủ thật ngon vào nhennn. Thức khuya aiu xót lắm đó!",
   },
   {
     id: 7,
     label: "Lúc lười ăn",
     emoji: "🍲",
     content:
-      "Vy à, Vy đã nói Vy dễ ăn, dễ nuôi ùi nên là ăn uống đàng hoàng nhó đừng để cái bụng mình phải chịu đói. Mệt cỡ nào cũng ăn một chút cho tui yên tâm nhé, tất nhiên là sẽ có thưởng nếu ngoan ùi",
+      "bé à, bé đã nói bé dễ ăn, dễ nuôi ùi nên là ăn uống đàng hoàng nhó đừng để cái bụng mình phải chịu đói. Mệt cỡ nào cũng ăn một chút cho aiu yên tâm nhé, tất nhiên là sẽ có thưởng nếu ngoan ùi",
   },
   {
     id: 8,
     label: "Lúc muốn bỏ cuộc",
     emoji: "🔥",
     content:
-      "Dừng lại nghỉ ngơi thì được, chứ đừng bỏ cuộc vì sợ hãi Vy nha. Tui sẽ luôn ở phía sau ủng hộ Vy.",
+      "Dừng lại nghỉ ngơi thì được, chứ đừng bỏ cuộc vì sợ hãi bé nha. aiu sẽ luôn ở phía sau ủng hộ bé.",
   },
   {
     id: 9,
     label: "Lúc thấy cô đơn, trống rỗng",
     emoji: "💌",
     content:
-      "Vy ơi, Vy có tui mà. Yên tâm khoảng cách xa xíu nhưng mà với khả năng lái xe của tui sẽ ko lâu để tui có mặt đâu kkk.",
+      "bé ơi, bé có aiu mà. Yên tâm khoảng cách xa xíu nhưng mà với khả năng lái xe của aiu sẽ ko lâu để aiu có mặt đâu kkk.",
   },
   {
     id: 10,
     label: "Lúc bị từ chối/thất bại",
     emoji: "📉",
     content:
-      "Thất bại chỉ là một phần của quá trình trưởng thành. Làm lại thôi Vy, tui tin vào bản lĩnh của Vy mà.",
+      "Thất bại chỉ là một phần của quá trình trưởng thành. Làm lại thôi bé, aiu tin vào bản lĩnh của bé mà.",
   },
   {
     id: 11,
     label: "Lúc áp lực học tập/công việc",
     emoji: "📚",
     content:
-      "Thả lỏng đôi vai một chút đi Vy. Áp lực hôm nay rồi sẽ trở thành thành quả rực rỡ ngày mai thôi.",
+      "Thả lỏng đôi vai một chút đi bé. Áp lực hôm nay rồi sẽ trở thành thành quả rực rỡ ngày mai thôi.",
   },
   {
     id: 12,
     label: "Lúc xích mích với người thân/bạn bè",
     emoji: "🫂",
     content:
-      "Nhẹ nhàng cho nhau cơ hội nếu họ quan trọng Vy nhé. Còn nếu họ không xứng đáng, hãy mạnh dạn buông tay.",
+      "Nhẹ nhàng cho nhau cơ hội nếu họ quan trọng bé nhé. Còn nếu họ không xứng đáng, hãy mạnh dạn buông tay.",
   },
   {
     id: 13,
     label: "Lúc nhớ nhà",
     emoji: "🏡",
     content:
-      "Nhớ nhà thì cứ về thôi Vy. Về để nạp lại năng lượng từ những người thương Vy vô điều kiện nhất.",
+      "Nhớ nhà thì cứ về thôi bé. Về để nạp lại năng lượng từ những người thương bé vô điều kiện nhất.",
   },
   {
     id: 14,
     label: "Lúc chờ kết quả quan trọng",
     emoji: "⏳",
     content:
-      "Dù kết quả thế nào, Vy đã nỗ lực hết mình rồi. Tui vẫn luôn tự hào về Vy bất kể điều gì xảy ra.",
+      "Dù kết quả thế nào, bé đã nỗ lực hết mình rồi. aiu vẫn luôn tự hào về bé bất kể điều gì xảy ra.",
   },
   {
     id: 15,
     label: "Lúc tự so sánh với người khác",
     emoji: "⚖️",
     content:
-      "Vy là duy nhất. Đừng đem ánh sáng của mình đi so với đèn của nhà người khác. Vy tuyệt vời theo cách của riêng Vy.",
+      "bé là duy nhất. Đừng đem ánh sáng của mình đi so với đèn của nhà người khác. bé tuyệt vời theo cách của riêng bé.",
   },
   {
     id: 16,
     label: "Lúc thấy không ai hiểu mình",
     emoji: "🌀",
     content:
-      "Tui có thể không hiểu hết mọi chuyện, nhưng tui hứa sẽ lắng nghe Vy bằng cả trái tim. Vy cứ nói, tui nghe.",
+      "aiu có thể không hiểu hết mọi chuyện, nhưng aiu hứa sẽ lắng nghe bé bằng cả trái tim. bé cứ nói, aiu nghe.",
   },
   {
     id: 17,
     label: "Lúc ốm/không khỏe",
     emoji: "🤒",
     content:
-      "Hi vọng Vy sẽ ko mở bức thư này lên quá nhiều lần hen, nhưng mà mở rồi thì hãy nhớ nếu cần j cứ nói tui ha.",
+      "Hi vọng bé sẽ ko mở bức thư này lên quá nhiều lần hen, nhưng mà mở rồi thì hãy nhớ nếu cần j cứ nói aiu ha.",
   },
   {
     id: 18,
     label: "Lúc gặp xui xẻo liên tiếp",
     emoji: "☔",
     content:
-      "Bad days không có nghĩa là bad life. Mọi chuyện rồi sẽ ổn thôi, có tui làm 'bùa may mắn' cho Vy đây. À còn nếu kéo xì dách xu thì tui chịu á ko đỡ nỗi đâu kkk",
+      "Bad days không có nghĩa là bad life. Mọi chuyện rồi sẽ ổn thôi, có aiu làm 'bùa may mắn' cho bé đây. À còn nếu kéo xì dách xu thì aiu chịu á ko đỡ nỗi đâu kkk",
   },
   {
     id: 19,
     label: "Lúc muốn khóc mà không khóc được",
     emoji: "🌧️",
     content:
-      "Đừng gồng nữa Vy. Nếu thấy mệt quá, cứ để nước mắt rơi một chút cho nhẹ lòng. Có tui ở đây rồi.",
+      "Đừng gồng nữa bé. Nếu thấy mệt quá, cứ để nước mắt rơi một chút cho nhẹ lòng. Có aiu ở đây rồi.",
   },
   {
     id: 20,
     label: "Lúc mất phương hướng",
     emoji: "🧭",
     content:
-      "Lạc lối cũng là một phần của hành trình tìm thấy chính mình. Đừng lo, cứ đi rồi sẽ tới thôi Vy.",
+      "Lạc lối cũng là một phần của hành trình tìm thấy chính mình. Đừng lo, cứ đi rồi sẽ tới thôi bé.",
   },
   {
     id: 21,
     label: "Lúc có thành công nhỏ",
     emoji: "🎉",
     content:
-      "Giỏi lắm cô gái ! Mỗi bước tiến nhỏ đều đáng để ăn mừng. Tui tự hào về Vy lắm!",
+      "Giỏi lắm cô gái ! Mỗi bước tiến nhỏ đều đáng để ăn mừng. aiu tự hào về bé lắm!",
   },
   {
     id: 22,
     label: "Lúc thấy mình không quan trọng",
     emoji: "💖",
     content:
-      "Chắc Vy ko mở bức thư này đâu tại tui nghĩ Vy biết mình quan trọng mà ha, còn nếu mở rồi thì chắc chắn là tò mò tui ghi j đúng hông nè .",
+      "Chắc bé ko mở bức thư này đâu tại aiu nghĩ bé biết mình quan trọng mà ha, còn nếu mở rồi thì chắc chắn là tò mò aiu ghi j đúng hông nè .",
   },
   {
     id: 23,
     label: "Lúc cảm thấy thế giới quá ồn ào",
     emoji: "🎧",
     content:
-      "Nhắm mắt lại và hít thở sâu. Tui sẽ là nơi bình yên nhất để Vy trốn vào mỗi khi mệt mỏi.",
+      "Nhắm mắt lại và hít thở sâu. aiu sẽ là nơi bình yên nhất để bé trốn vào mỗi khi mệt mỏi.",
   },
   {
     id: 24,
     label: "Lúc muốn nghe lời yêu thương",
     emoji: "🌹",
     content:
-      "Tui thương Vy. Thương nhất trên đời. Câu này tui sẽ nói với Vy mỗi ngày, không bao giờ chán. E hèm câu này sẽ nói khi chúng ta đã quen nhau nha giờ ko danh ko phận nói quê lắm",
+      "aiu thương bé. Thương nhất trên đời. Câu này aiu sẽ nói với bé mỗi ngày, không bao giờ chán. E hèm câu này sẽ nói khi chúng ta đã quen nhau nha giờ ko danh ko phận nói quê lắm",
   },
   {
     id: 25,
     label: "Lúc bé giận",
     emoji: "😡",
     content:
-      "Vy đang giận tui đúng không? Đừng giữ trong lòng nha, cứ xả hết vào tui nè. Tui sai rồi, tui xin lỗi cục dàng nhóooo 💖 Mở lòng nghe tui giải thích hoặc dắt đi ăn bù nha!",
+      "bé đang giận aiu đúng không? Đừng giữ trong lòng nha, cứ xả hết vào aiu nè. aiu sai rồi, aiu xin lỗi cục dàng nhóooo 💖 Mở lòng nghe aiu giải thích hoặc dắt đi ăn bù nha!",
   },
 ];
 
@@ -749,7 +749,7 @@ const TIMELINE_DATA = [
       {
         date: "14/02",
         title: "Lễ Tình Nhân 2026",
-        desc: "Món quà bí mật tặng Vy lên sóng. Hy vọng Vy sẽ thích góc nhỏ này.",
+        desc: "Món quà bí mật tặng bé lên sóng. Hy vọng bé sẽ thích góc nhỏ này.",
         img: "Đang cập nhật",
       },
     ],
@@ -765,7 +765,7 @@ const LIBRARY_DATA = [
     date: "08/03/2026",
     title: "Ngày Quốc Tế Phụ Nữ 8/3",
     coverEmoji: "💐",
-    content: `Gửi Ngoan Xinh Yêu Mang Tên Vy\n\nTui không giỏi nói những lời mật ngọt, cũng chẳng biết phô trương tình cảm theo cách người ta thường làm. Tui chọn yêu Vy theo cách riêng của mình – một cách yêu không ồn ào, không khéo léo, nhưng luôn chân thật.\n\nTình yêu của tui nằm trong những câu hỏi nhỏ nhặt mỗi ngày: "Vy ăn j chưa?", "Nào Vy zìa nói tui biết nhó", hay "Hôm nay có mệt lắm không?". Hoặc là những khi tui cảm thấy nhớ Vy tui không dám gọi hay phiền Vy mà chỉ lặng lẽ đọc lại từng dòng tin nhắn cũ rồi thầm cười . Nếu Vy để ý một chút, Vy sẽ thấy tình yêu của tui luôn hiện diện, kiên trì và cố gắng từng chút một. Có thể tui ít khi nói ra thành lời nhưng mong Vy hiểu là : Sự hiện diện của Vy luôn nằm trong mọi kế hoạch tương lai mà tui tính tới, tại tui sợ Vy bị áp lực hay khó chịu nên tui giấu hoy nhó.\n\nNhân ngày 8/3 hôm nay, tui chúc Vy thật vui vẻ và hạnh phúc. Mong Vy luôn được trân trọng, bớt đi những áp lực cuộc sống và hãy cười thật nhiều nhé. Hãy cứ yêu thương bản thân thật tốt và luôn xinh đẹp theo cách của riêng mình.\n\nVy nhớ nha: Bất cứ khi nào Vy không ổn, mong Vy nhớ rằng luôn có một người sẵn sàng ưu tiên để đến VY nhanh nhất.\n\nTái bút: tác giả đang rất muốn ôm Vy vào hôm nay nhưng mà dự kiến sẽ hơi chậm trễ mong Vy ghi nhớ và tính lãi thêm nhiều cái ôm khác `,
+    content: `Gửi Ngoan Xinh Yêu Mang Tên bé\n\naiu không giỏi nói những lời mật ngọt, cũng chẳng biết phô trương tình cảm theo cách người ta thường làm. aiu chọn yêu bé theo cách riêng của mình – một cách yêu không ồn ào, không khéo léo, nhưng luôn chân thật.\n\nTình yêu của aiu nằm trong những câu hỏi nhỏ nhặt mỗi ngày: "bé ăn j chưa?", "Nào bé zìa nói aiu biết nhó", hay "Hôm nay có mệt lắm không?". Hoặc là những khi aiu cảm thấy nhớ bé aiu không dám gọi hay phiền bé mà chỉ lặng lẽ đọc lại từng dòng tin nhắn cũ rồi thầm cười . Nếu bé để ý một chút, bé sẽ thấy tình yêu của aiu luôn hiện diện, kiên trì và cố gắng từng chút một. Có thể aiu ít khi nói ra thành lời nhưng mong bé hiểu là : Sự hiện diện của bé luôn nằm trong mọi kế hoạch tương lai mà aiu tính tới, tại aiu sợ bé bị áp lực hay khó chịu nên aiu giấu hoy nhó.\n\nNhân ngày 8/3 hôm nay, aiu chúc bé thật vui vẻ và hạnh phúc. Mong bé luôn được trân trọng, bớt đi những áp lực cuộc sống và hãy cười thật nhiều nhé. Hãy cứ yêu thương bản thân thật tốt và luôn xinh đẹp theo cách của riêng mình.\n\nbé nhớ nha: Bất cứ khi nào bé không ổn, mong bé nhớ rằng luôn có một người sẵn sàng ưu tiên để đến bé nhanh nhất.\n\nTái bút: tác giả đang rất muốn ôm bé vào hôm nay nhưng mà dự kiến sẽ hơi chậm trễ mong bé ghi nhớ và tính lãi thêm nhiều cái ôm khác `,
     color: "from-pink-400 to-rose-300",
   },
   {
@@ -774,15 +774,15 @@ const LIBRARY_DATA = [
     title: "Valentine Đầu Tiên",
     coverEmoji: "🍫",
     content:
-      "Món quà này tui đã ấp ủ làm cho Vy từ lâu rồi. Mong là góc nhỏ này sẽ khiến Vy vui và bất ngờ. Cảm ơn Vy vì đã xuất hiện trong thế giới của tui...",
+      "Món quà này aiu đã ấp ủ làm cho bé từ lâu rồi. Mong là góc nhỏ này sẽ khiến bé vui và bất ngờ. Cảm ơn bé vì đã xuất hiện trong thế giới của aiu...",
     color: "from-rose-400 to-red-400",
   },
   {
     id: "17-2-2026",
     date: "17/02/2026",
-    title: "Sinh nhật của Vy",
+    title: "Sinh nhật của bé",
     coverEmoji: "🎂",
-    content: `Lần đầu tiên tụi mình gặp nhau.\nẤn tượng đầu tiên của tui là Vy nhỏ nhắn, đáng yêu y hệt như những gì tui từng hình dung. Không hiểu sao ở cạnh Vy, tui thấy bình yên và thoải mái lắm, thoải mái đến mức tui có thể tự nhiên kể cho Vy nghe những tâm sự mà tui vốn dĩ chẳng bao giờ muốn nói với ai.\nTui hy vọng rằng, trên những chặng đường sắp tới, chúng ta sẽ luôn có cơ hội đồng hành cùng nhau. Chúc Vy của tui có một ngày sinh nhật thật vui vẻ, ấm áp và luôn cười thật tươi nhé`,
+    content: `Lần đầu tiên tụi mình gặp nhau.\nẤn tượng đầu tiên của aiu là bé nhỏ nhắn, đáng yêu y hệt như những gì aiu từng hình dung. Không hiểu sao ở cạnh bé, aiu thấy bình yên và thoải mái lắm, thoải mái đến mức aiu có thể tự nhiên kể cho bé nghe những tâm sự mà aiu vốn dĩ chẳng bao giờ muốn nói với ai.\naiu hy vọng rằng, trên những chặng đường sắp tới, chúng ta sẽ luôn có cơ hội đồng hành cùng nhau. Chúc bé của aiu có một ngày sinh nhật thật vui vẻ, ấm áp và luôn cười thật tươi nhé`,
     color: "from-rose-400 to-red-400",
   },
   {
@@ -790,7 +790,7 @@ const LIBRARY_DATA = [
     date: "17/04/2026",
     title: "Tốt nghiệp của cục dàng",
     coverEmoji: "💐",
-    content: `Chào em nha, cục dàng dễ thương của anh.\n\nAnh thấy mình thật may mắn khi được cùng em đi qua một cột mốc rất đẹp trong cuộc đời – ngày em tốt nghiệp. Khoảnh khắc này không chỉ đáng nhớ với em, mà với anh cũng là một niềm tự hào rất lớn.\n\nSau này, dù con đường phía trước có như thế nào, anh vẫn luôn tin rằng em sẽ tiếp tục tỏa sáng theo cách riêng của mình. Hãy cứ trải nghiệm thật nhiều, học hỏi thật nhiều em nhé. Con đường sau giảng đường chắc chắn sẽ có những chông gai và thử thách, nhưng em đừng lo. Nếu có lúc mệt mỏi hay áp lực quá, cứ dựa vào anh. Anh sẽ luôn ở đây, ở cạnh em, bảo bọc em, và đưa em về “nhà” – nơi có cơm ngon đợi cửa, trà sữa luôn đầy ly.\n\nMệt thì cứ nhõng nhẽo với anh, buồn thì cứ than thở với anh, có chuyện gì không vui hay ai làm em buồn cũng méc cho anh nghe nha. Anh nói rồi mà, anh sẽ luôn là “đồng minh” đáng tin cậy nhất của cục dàng – chỉ sau ba mẹ thôi.\n\nAnh thương em rất nhiều, Thanh Vy à – cục dàng của anh. Moahhh.\n\nTừ Thiên Gia Bảo`,
+    content: `Chào em nha, cục dàng dễ thương của anh.\n\nAnh thấy mình thật may mắn khi được cùng em đi qua một cột mốc rất đẹp trong cuộc đời – ngày em tốt nghiệp. Khoảnh khắc này không chỉ đáng nhớ với em, mà với anh cũng là một niềm tự hào rất lớn.\n\nSau này, dù con đường phía trước có như thế nào, anh vẫn luôn tin rằng em sẽ tiếp tục tỏa sáng theo cách riêng của mình. Hãy cứ trải nghiệm thật nhiều, học hỏi thật nhiều em nhé. Con đường sau giảng đường chắc chắn sẽ có những chông gai và thử thách, nhưng em đừng lo. Nếu có lúc mệt mỏi hay áp lực quá, cứ dựa vào anh. Anh sẽ luôn ở đây, ở cạnh em, bảo bọc em, và đưa em về “nhà” – nơi có cơm ngon đợi cửa, trà sữa luôn đầy ly.\n\nMệt thì cứ nhõng nhẽo với anh, buồn thì cứ than thở với anh, có chuyện gì không vui hay ai làm em buồn cũng méc cho anh nghe nha. Anh nói rồi mà, anh sẽ luôn là “đồng minh” đáng tin cậy nhất của cục dàng – chỉ sau ba mẹ thôi.\n\nAnh thương em rất nhiều, Thanh bé à – cục dàng của anh. Moahhh.\n\nTừ Thiên Gia Bảo`,
     color: "from-rose-400 to-red-400",
   },
 ];
@@ -835,10 +835,10 @@ export default function Home() {
             <Lock className="text-white" size={48} />
           </div>
           <h1 className="text-4xl md:text-5xl font-black text-[#1e293b] mb-4">
-            Vùng trời của Vy
+            Vùng trời của bé
           </h1>
           <p className="text-slate-400 text-lg md:text-xl mb-10 italic">
-            Vy hãy nhập mật mã để mở khóa...
+            Bé vui lòng nhập mật mã để mở khóa...
           </p>
           <input
             type="password"
@@ -855,7 +855,7 @@ export default function Home() {
           </button>
           {error && (
             <p className="text-red-500 text-lg mt-6 font-bold animate-pulse">
-              Mật mã chưa đúng rồi Vy ơi... 😢
+              Mật mã chưa đúng rồi bé ơi... 😢
             </p>
           )}
         </div>
@@ -965,7 +965,7 @@ export default function Home() {
             ✉️ Thư cảm xúc
           </h2>
           <p className="text-slate-400 italic mb-8">
-            Hãy chọn một bức thư đúng với tâm trạng hiện tại của Vy nhé...
+            Hãy chọn một bức thư đúng với tâm trạng hiện tại của bé nhé...
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
             {LETTERS_DATA.map((letItem) => (
@@ -1018,7 +1018,7 @@ export default function Home() {
             💐 Thư viện kỷ niệm
           </h2>
           <p className="text-slate-400 italic mb-8">
-            Những lá thư dài tui viết cho Vy vào những ngày đặc biệt...
+            Những lá thư dài aiu viết cho bé vào những ngày đặc biệt...
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {LIBRARY_DATA.map((libItem) => (
