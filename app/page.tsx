@@ -798,7 +798,7 @@ const LIBRARY_DATA = [
     date: "01/06/2026",
     title: "Ngày Quốc Tế Thiếu Nhi 1/6 🎈",
     coverEmoji: "🎈",
-    content: `Dear Ngoan Xinh Iu mang tên Vy 💖\n\n🚀 Loa loa loa! Thông báo khẩn cấp gửi tới em bé quá tuổi thiếu nhi nhưng lại thừa tuổi làm nũng của anh!\n\nChúc mừng ngày Quốc tế Thiếu nhi 1/6 nha cục dàng dễ thương! Lại một mùa lễ nữa chúng ta dính lấy nhau rồi. Anh cực kỳ tuyên dương tinh thần cố gắng học hỏi, đòi trưởng thành làm người lớn của bé yêu.\n\nNhưng mà Vy ơi, dù bé có lớn khôn cỡ nào thì trong mắt anh, em vẫn mãi là một em bé dễ thương, đáng yêu, là một ngoan xinh iu cần được yêu thương và nuông chiều nhóoo.\n\nCảm ơn bé vì đã luôn ở bên cạnh anh. Moahhh một cái rõ to vào má này! Anh yêu thương bé gắt gắt gắt gắt nhiềuuuuu!`,
+    content: `Dear Ngoan Xinh Iu mang tên Vy 💖\n\n🚀 Loa loa loa! Thông báo khẩn cấp gửi tới em bé quá tuổi thiếu nhi nhưng lại thừa tuổi làm nũng của anh!\n\nChúc mừng ngày Quốc tế Thiếu nhi 1/6 nha cục dàng ! Lại mụt ngày lễ nữa chúng ta bên nhau rùi. Anh cực kỳ tuyên dương tinh thần cố gắng học hỏi làm người lớn của bé yêu.\n\nNhưng mà bé ơi, dù bé có lớn cỡ nào thì trong mắt anh, bé vẫn mãi là một em bé dễ thương, đáng yêu, là một ngoan xinh iu cần được yêu thương và nuông chiều nhóoo.\n\nCảm ơn bé vì đã luôn ở bên cạnh anh. Moahhh một cái rõ to vào má này! Anh yêu thương bé gắt gắt gắt gắt nhiềuuuuu!`,
     color: "from-amber-400 to-pink-400",
   },
 ];
