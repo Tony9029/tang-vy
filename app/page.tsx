@@ -793,6 +793,14 @@ const LIBRARY_DATA = [
     content: `Chào em nha, cục dàng dễ thương của anh.\n\nAnh thấy mình thật may mắn khi được cùng em đi qua một cột mốc rất đẹp trong cuộc đời – ngày em tốt nghiệp. Khoảnh khắc này không chỉ đáng nhớ với em, mà với anh cũng là một niềm tự hào rất lớn.\n\nSau này, dù con đường phía trước có như thế nào, anh vẫn luôn tin rằng em sẽ tiếp tục tỏa sáng theo cách riêng của mình. Hãy cứ trải nghiệm thật nhiều, học hỏi thật nhiều em nhé. Con đường sau giảng đường chắc chắn sẽ có những chông gai và thử thách, nhưng em đừng lo. Nếu có lúc mệt mỏi hay áp lực quá, cứ dựa vào anh. Anh sẽ luôn ở đây, ở cạnh em, bảo bọc em, và đưa em về “nhà” – nơi có cơm ngon đợi cửa, trà sữa luôn đầy ly.\n\nMệt thì cứ nhõng nhẽo với anh, buồn thì cứ than thở với anh, có chuyện gì không vui hay ai làm em buồn cũng méc cho anh nghe nha. Anh nói rồi mà, anh sẽ luôn là “đồng minh” đáng tin cậy nhất của cục dàng – chỉ sau ba mẹ thôi.\n\nAnh thương em rất nhiều, Thanh bé à – cục dàng của anh. Moahhh.\n\nTừ Thiên Gia Bảo`,
     color: "from-rose-400 to-red-400",
   },
+  {
+    id: "1-6-2026",
+    date: "01/06/2026",
+    title: "Ngày Quốc Tế Thiếu Nhi 1/6 🎈",
+    coverEmoji: "🎈",
+    content: `Dear Ngoan Xinh Iu mang tên Vy 💖\n\n🚀 Loa loa loa! Thông báo khẩn cấp gửi tới em bé quá tuổi thiếu nhi nhưng lại thừa tuổi làm nũng của anh!\n\nChúc mừng ngày Quốc tế Thiếu nhi 1/6 nha cục dàng dễ thương! Lại một mùa lễ nữa chúng ta dính lấy nhau rồi. Anh cực kỳ tuyên dương tinh thần cố gắng học hỏi, đòi trưởng thành làm người lớn của bé yêu.\n\nNhưng mà Vy ơi, dù bé có lớn khôn cỡ nào thì trong mắt anh, em vẫn mãi là một em bé dễ thương, đáng yêu, là một ngoan xinh iu cần được yêu thương và nuông chiều nhóoo.\n\nCảm ơn bé vì đã luôn ở bên cạnh anh. Moahhh một cái rõ to vào má này! Anh yêu thương bé gắt gắt gắt gắt nhiềuuuuu!`,
+    color: "from-amber-400 to-pink-400",
+  },
 ];
 
 // --- MAIN COMPONENT TRANG CHỦ ---
@@ -866,7 +874,7 @@ export default function Home() {
   // KHÔNG GIAN ĐÃ MỞ KHÓA
   return (
     <main className="min-h-screen bg-[#fff5f7] p-4 md:p-12 text-slate-800">
-      {/* 1. MÀN HÌNH CHÍNH (DASHBOARD) */}
+      {/* 1. MÀN HÌNH CHÍNH (DASHBOARdD) */}
       {view === "home" && (
         <div className="max-w-4xl mx-auto space-y-10 animate-in fade-in duration-500">
           <div className="text-center space-y-3">
