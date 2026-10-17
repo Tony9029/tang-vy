@@ -801,6 +801,28 @@ const LIBRARY_DATA = [
     content: `Dear Ngoan Xinh Iu mang tên Vy 💖\n\n🚀 Loa loa loa! Thông báo khẩn cấp gửi tới em bé quá tuổi thiếu nhi nhưng lại thừa tuổi làm nũng của anh!\n\nChúc mừng ngày Quốc tế Thiếu nhi 1/6 nha cục dàng ! Lại mụt ngày lễ nữa chúng ta bên nhau rùi. Anh cực kỳ tuyên dương tinh thần cố gắng học hỏi làm người lớn của bé yêu.\n\nNhưng mà bé ơi, dù bé có lớn cỡ nào thì trong mắt anh, bé vẫn mãi là một em bé dễ thương, đáng yêu, là một ngoan xinh iu cần được yêu thương và nuông chiều nhóoo.\n\nCảm ơn bé vì đã luôn ở bên cạnh anh. Moahhh một cái rõ to vào má này! Anh yêu thương bé gắt gắt gắt gắt nhiềuuuuu!`,
     color: "from-amber-400 to-pink-400",
   },
+  {
+    id: "20-10-2026",
+    date: "20/10/2026",
+    title: "Ngày Quốc Phụ Nữ 20/10 💖",
+    coverEmoji: "🎈",
+    content: `Chào em, cục dàng của anh ❤️
+
+20/10 rồi, một ngày thật đặc biệt dành cho phái nữ, và đặc biệt hơn nữa là dành cho cục dàng của anh. 🥰
+
+Cảm ơn em vì đã ở bên anh, cùng anh trải qua những ngày lễ đáng nhớ trong năm, cùng anh có thêm thật nhiều kỷ niệm mà sau này nghĩ lại chắc hai đứa sẽ vừa cười vừa thấy thương nhau.
+
+Em cứ việc đẹp, việc vui, việc hạnh phúc, còn anh sẽ cố gắng từng ngày để làm cho vợ iu của anh càng ngày càng hạnh phúc hơn, và cố gắng bảo vệ nụ cười luôn ở trên môi em. ❤️
+
+Anh không dám hứa rằng cuộc sống lúc nào cũng sẽ hoàn hảo, nhưng anh hứa sẽ luôn cố gắng để những ngày bên anh của em có thật nhiều niềm vui, thật nhiều tiếng cười và ít nhất là… không thiếu người chọc em tức mỗi ngày. 😂
+
+Chúc cục dàng của anh 20/10 thật vui, thật xinh, thật hạnh phúc. Mong em luôn bình an, luôn rạng rỡ và được cuộc đời đối xử thật dịu dàng.
+
+20/10 vui vẻ nha, vợ iu của anh.
+
+Yêu cục dàng nhiều. ❤️`,
+    color: "from-amber-400 to-pink-400",
+  },
 ];
 
 // --- MAIN COMPONENT TRANG CHỦ ---
